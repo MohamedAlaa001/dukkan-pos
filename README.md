@@ -6,11 +6,11 @@
 
 Dukkan brings checkout, products, stock, customer accounts, suppliers and everyday reports into one desktop app. It started with a friend's clothing shop and supports general retail, including products with sizes and colors. Your shop's data stays on your PC, and everyday use does not require an internet connection.
 
-[Download the latest Windows installer](https://github.com/MohamedAlaa001/dukkan-pos/releases/latest) · [User guide](docs/USER_GUIDE.md) · [Report a problem](https://github.com/MohamedAlaa001/dukkan-pos/issues)
+[Download Dukkan 1.0.0 for Windows](https://github.com/MohamedAlaa001/dukkan-pos/releases/download/v1.0.0/Dukkan-Setup-1.0.0.exe) · [User guide](docs/USER_GUIDE.md) · [Report a problem](https://github.com/MohamedAlaa001/dukkan-pos/issues)
 
 ## Install and get started
 
-1. Open the [latest release](https://github.com/MohamedAlaa001/dukkan-pos/releases/latest) and download `Dukkan-Setup-1.0.0.exe` from **Assets**.
+1. Open the [Dukkan 1.0.0 release](https://github.com/MohamedAlaa001/dukkan-pos/releases/tag/v1.0.0) and download `Dukkan-Setup-1.0.0.exe` from **Assets**.
 2. Close Dukkan if it is already running, then run the installer. It installs for your Windows account and creates Desktop and Start menu shortcuts. Administrator rights and a separate .NET installation are not required.
 3. On first launch, enter your shop details, create your owner account and choose how you enter tax in prices.
 4. Save your account recovery codes and backup recovery secret somewhere safe, away from the shop PC.
@@ -49,7 +49,13 @@ Before putting Dukkan into daily shop use, test your actual scanner and receipt/
 
 **Version 1.0.0 · Database schema 16**
 
-See the release notes for changes and the user guide for supported workflows and deployment checks.
+Download the [Windows installer](https://github.com/MohamedAlaa001/dukkan-pos/releases/download/v1.0.0/Dukkan-Setup-1.0.0.exe), read the [1.0.0 release notes](https://github.com/MohamedAlaa001/dukkan-pos/releases/tag/v1.0.0), or verify your download against the [SHA-256 checksums](https://github.com/MohamedAlaa001/dukkan-pos/releases/download/v1.0.0/SHA256SUMS.txt). See the user guide for supported workflows and deployment checks.
+
+## Why Dukkan exists
+
+A friend needed a POS for a clothing shop. That became a practical challenge: how quickly could a useful desktop product be delivered while keeping a clear specification, reliable workflows and a straightforward installation?
+
+The work combined product research and a written PRD with AI-assisted design, implementation and debugging. Interactive end-to-end checks exercised the Windows application and caught issues beyond the automated tests. Dukkan is now publicly available for people to download, try and give feedback on.
 
 ## For developers
 
