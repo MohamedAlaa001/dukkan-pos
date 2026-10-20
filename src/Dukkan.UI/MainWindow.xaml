@@ -1,0 +1,243 @@
+<Window x:Class="Dukkan.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:Dukkan.UI"
+        xmlns:v="clr-namespace:Dukkan.UI.Views"
+        Title="Dukkan" Icon="Assets/dukkan.ico" Width="1366" Height="768" MinWidth="1180" MinHeight="680"
+        Background="{StaticResource BackgroundBrush}"
+        FlowDirection="{Binding L.FlowDirection}"
+        TextElement.FontFamily="{StaticResource UiFont}" TextElement.FontSize="13" TextElement.Foreground="{StaticResource TextPrimaryBrush}"
+        TextOptions.TextFormattingMode="Ideal" TextOptions.TextRenderingMode="ClearType" UseLayoutRounding="True" SnapsToDevicePixels="True"
+        WindowStartupLocation="CenterScreen" PreviewKeyDown="Window_PreviewKeyDown">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type ui:DashboardViewModel}"><v:DashboardView/></DataTemplate>
+        <DataTemplate DataType="{x:Type ui:PosViewModel}"><v:PosView/></DataTemplate>
+        <DataTemplate DataType="{x:Type ui:ProductsViewModel}"><v:ProductsView/></DataTemplate>
+        <DataTemplate DataType="{x:Type ui:ProductEditViewModel}"><v:ProductEditView/></DataTemplate>
+        <DataTemplate DataType="{x:Type ui:InventoryViewModel}"><v:InventoryView/></DataTemplate>
+        <DataTemplate DataType="{x:Type ui:StockWorkspaceViewModel}"><v:StockWorkspaceView/></DataTemplate>
+        <DataTemplate DataType="{x:Type ui:CustomersViewModel}"><v:CustomersView/></DataTemplate>
+        <DataTemplate DataType="{x:Type ui:ExpensesViewModel}"><v:ExpensesView/></DataTemplate>
+        <DataTemplate DataType="{x:Type ui:SuppliersViewModel}"><v:SuppliersView/></DataTemplate>
+        <DataTemplate DataType="{x:Type ui:ReportsViewModel}"><v:ReportsView/></DataTemplate>
+        <DataTemplate DataType="{x:Type ui:SettingsViewModel}"><v:SettingsView/></DataTemplate>
+
+    </Window.Resources>
+
+    <Grid>
+        <!-- ============ Login ============ -->
+        <v:SetupView Visibility="{Binding IsSetupMode, Converter={StaticResource BoolToVis}}"/>
+        <v:LoginView DataContext="{Binding Login}" Visibility="{Binding DataContext.IsLoginMode, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}"/>
+
+        <!-- ============ Application shell ============ -->
+        <Grid Visibility="{Binding IsMainMode, Converter={StaticResource BoolToVis}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="232"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Sidebar -->
+            <Border Background="{StaticResource NavyBrush}">
+                <Grid>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                    <StackPanel Margin="24,22,24,18">
+                        <StackPanel Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Left">
+                            <Image Source="Assets/logo.png" Width="34" Height="34" Margin="0,0,10,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <TextBlock Text="{ui:T Brand_Name}" FontSize="26" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding StoreName, Source={x:Static ui:Localizer.Instance}}" FontSize="12.5" Foreground="{StaticResource NavMutedBrush}" Margin="0,2,0,0"/>
+                        <TextBlock Text="{x:Static ui:ProductVersion.Display}" FontSize="11" Foreground="{StaticResource NavMutedBrush}" Margin="0,3,0,0" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="14,0">
+                        <StackPanel IsEnabled="True" KeyboardNavigation.DirectionalNavigation="Contained">
+                            <RadioButton GroupName="nav" Style="{StaticResource NavItem}" Tag="{x:Static ui:Icons.Home}" Content="{ui:T Nav_Dashboard}" Visibility="{Binding IsOwner, Converter={StaticResource BoolToVis}}"
+                                         IsChecked="{Binding Nav, Converter={StaticResource EqualsConv}, ConverterParameter=Dashboard, Mode=TwoWay}" AutomationProperties.Name="Dashboard"/>
+                            <RadioButton GroupName="nav" Style="{StaticResource NavItem}" Tag="{x:Static ui:Icons.Cart}" Content="{ui:T Nav_Pos}"
+                                         IsChecked="{Binding Nav, Converter={StaticResource EqualsConv}, ConverterParameter=Pos, Mode=TwoWay}"/>
+                            <RadioButton GroupName="nav" Style="{StaticResource NavItem}" Tag="{x:Static ui:Icons.Package}" Content="{ui:T Nav_Products}"
+                                         IsChecked="{Binding Nav, Converter={StaticResource EqualsConv}, ConverterParameter=Products, Mode=TwoWay}"/>
+                            <RadioButton GroupName="nav" Style="{StaticResource NavItem}" Tag="{x:Static ui:Icons.Tag}" Content="{ui:T Nav_Inventory}"
+                                         IsChecked="{Binding Nav, Converter={StaticResource EqualsConv}, ConverterParameter=Inventory, Mode=TwoWay}"/>
+                            <RadioButton GroupName="nav" Style="{StaticResource NavItem}" Tag="{x:Static ui:Icons.People}" Content="{ui:T Nav_Customers}"
+                                         IsChecked="{Binding Nav, Converter={StaticResource EqualsConv}, ConverterParameter=Customers, Mode=TwoWay}"/>
+                            <RadioButton GroupName="nav" Style="{StaticResource NavItem}" Tag="{x:Static ui:Icons.Shop}" Content="{ui:T Nav_Suppliers}" Visibility="{Binding IsOwner, Converter={StaticResource BoolToVis}}"
+                                         IsChecked="{Binding Nav, Converter={StaticResource EqualsConv}, ConverterParameter=Suppliers, Mode=TwoWay}"/>
+                            <RadioButton GroupName="nav" Style="{StaticResource NavItem}" Tag="{x:Static ui:Icons.Calculator}" Content="{ui:T Nav_Expenses}" Visibility="{Binding IsOwner, Converter={StaticResource BoolToVis}}"
+                                         IsChecked="{Binding Nav, Converter={StaticResource EqualsConv}, ConverterParameter=Expenses, Mode=TwoWay}"/>
+                            <RadioButton GroupName="nav" Style="{StaticResource NavItem}" Tag="{x:Static ui:Icons.Chart}" Content="{ui:T Nav_Reports}" Visibility="{Binding IsOwner, Converter={StaticResource BoolToVis}}"
+                                         IsChecked="{Binding Nav, Converter={StaticResource EqualsConv}, ConverterParameter=Reports, Mode=TwoWay}"/>
+                            <RadioButton GroupName="nav" Style="{StaticResource NavItem}" Tag="{x:Static ui:Icons.Settings}" Content="{ui:T Nav_Settings}" Visibility="{Binding IsOwner, Converter={StaticResource BoolToVis}}"
+                                         IsChecked="{Binding Nav, Converter={StaticResource EqualsConv}, ConverterParameter=Settings, Mode=TwoWay}"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                    <!-- User -->
+                    <Grid Grid.Row="2" Margin="14,10,14,16">
+                        <ToggleButton x:Name="UserMenuToggle" Cursor="Hand" Focusable="True" Background="Transparent" BorderThickness="0" Foreground="White" AutomationProperties.Name="User menu">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Grid>
+                                        <Border x:Name="Bd" CornerRadius="8" Background="Transparent"/>
+                                        <Border x:Name="Ring" CornerRadius="8" BorderThickness="2" BorderBrush="#99FFFFFF" Visibility="Collapsed"/>
+                                        <ContentPresenter Margin="8"/>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Background" Value="{StaticResource NavHoverBrush}"/></Trigger>
+                                        <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Ring" Property="Visibility" Value="Visible"/></Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <Border Width="36" Height="36" CornerRadius="18" Background="#26FFFFFF">
+                                    <ui:GlyphIcon Glyph="{x:Static ui:Icons.Person}" FontSize="18" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel Grid.Column="1" Margin="10,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding UserName}" FontWeight="SemiBold" Foreground="White"/>
+                                    <TextBlock Text="{Binding UserRole}" FontSize="12" Foreground="{StaticResource NavMutedBrush}"/>
+                                </StackPanel>
+                                <ui:GlyphIcon Grid.Column="2" Glyph="{x:Static ui:Icons.ChevronUp}" FontSize="12" Foreground="{StaticResource NavMutedBrush}" VerticalAlignment="Center"/>
+                            </Grid>
+                        </ToggleButton>
+                        <Popup IsOpen="{Binding IsChecked, ElementName=UserMenuToggle, Mode=TwoWay}" PlacementTarget="{Binding ElementName=UserMenuToggle}" Placement="Top" StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
+                            <Border Style="{StaticResource Card}" Margin="8,8,8,6" Padding="6" MinWidth="190" TextElement.FontFamily="{StaticResource UiFont}" TextElement.FontSize="13" FlowDirection="{Binding L.FlowDirection}">
+                                <StackPanel>
+                                    <Button Style="{StaticResource GhostButton}" Command="{Binding NavigateCommand}" CommandParameter="Settings" HorizontalContentAlignment="Left" Click="CloseUserMenu" Visibility="{Binding IsOwner, Converter={StaticResource BoolToVis}}">
+                                        <StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Settings}" Margin="0,0,10,0"/><TextBlock Text="{ui:T Nav_Settings}" VerticalAlignment="Center"/></StackPanel>
+                                    </Button>
+                                    <Button Style="{StaticResource GhostButton}" Command="{Binding LockCommand}" HorizontalContentAlignment="Left" Foreground="{StaticResource TextPrimaryBrush}" Click="CloseUserMenu">
+                                        <StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Lock}" Margin="0,0,10,0"/><TextBlock Text="{ui:T Action_Lock}" VerticalAlignment="Center"/></StackPanel>
+                                    </Button>
+                                    <Button Style="{StaticResource GhostButton}" Command="{Binding SignOutCommand}" Foreground="{StaticResource DangerBrush}" HorizontalContentAlignment="Left" Click="CloseUserMenu">
+                                        <StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.SignOut}" Margin="0,0,10,0"/><TextBlock Text="{ui:T Action_SignOut}" VerticalAlignment="Center"/></StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- Content area -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+
+                <!-- Top bar -->
+                <Grid Margin="24,16,24,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" MaxWidth="560"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <TextBox x:Name="GlobalSearchBox" Text="{Binding GlobalSearch, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Search}"
+                             ui:Ui.Placeholder="{ui:T Search_Global}" AutomationProperties.Name="Search">
+                        <TextBox.InputBindings><KeyBinding Key="Enter" Command="{Binding SearchCommand}"/></TextBox.InputBindings>
+                    </TextBox>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <!-- Shift status: one open shift at a time; opening and closing are explicit actions. -->
+                        <Border Style="{StaticResource FlatCard}" Height="38" Padding="12,0" CornerRadius="8" Margin="0,0,8,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Ellipse Width="8" Height="8" Margin="0,0,8,0" VerticalAlignment="Center">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Setter Property="Fill" Value="{StaticResource PlaceholderBrush}"/>
+                                            <Style.Triggers><DataTrigger Binding="{Binding HasShift}" Value="True"><Setter Property="Fill" Value="{StaticResource SuccessBrush}"/></DataTrigger></Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <TextBlock Text="{Binding ShiftText}" FontWeight="Medium" VerticalAlignment="Center" FlowDirection="{Binding L.FlowDirection}"/>
+                            </StackPanel>
+                        </Border>
+                        <Button Style="{StaticResource OutlineButton}" Command="{Binding OpenShiftCommand}" Content="{ui:T Shift_OpenTitle}" MinHeight="38" Margin="0,0,8,0" Visibility="{Binding NoShift, Converter={StaticResource BoolToVis}}"/>
+                        <Button Style="{StaticResource OutlineButton}" Command="{Binding CloseShiftCommand}" Content="{ui:T Shift_CloseTitle}" MinHeight="38" Margin="0,0,8,0" Visibility="{Binding HasShift, Converter={StaticResource BoolToVis}}"/>
+                        <Button Style="{StaticResource SecondaryButton}" Command="{Binding ToggleLanguageCommand}" MinHeight="38" Padding="12,0" Margin="0,0,8,0" ToolTip="Language / اللغة" AutomationProperties.Name="Switch language">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:GlyphIcon Glyph="{x:Static ui:Icons.Globe}" Margin="0,0,8,0"/>
+                                <TextBlock Text="{ui:T Lang_Toggle}" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Button>
+                        <Grid>
+                            <ToggleButton x:Name="BellToggle" IsChecked="{Binding NotificationsOpen, Mode=TwoWay}" Width="38" Height="38" Cursor="Hand" AutomationProperties.Name="Notifications"
+                                          Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" Foreground="{StaticResource TextSecondaryBrush}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Grid>
+                                            <Border x:Name="Ring" Margin="-2" CornerRadius="10" BorderThickness="2" BorderBrush="{StaticResource FocusRingBrush}" Visibility="Collapsed"/>
+                                            <Border x:Name="Bd" CornerRadius="8" BorderThickness="1" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}">
+                                                <ui:GlyphIcon Glyph="{x:Static ui:Icons.Bell}" FontSize="16" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Background" Value="{StaticResource SurfaceSubtleBrush}"/></Trigger>
+                                            <Trigger Property="IsChecked" Value="True"><Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource OrangeBrush}"/></Trigger>
+                                            <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Ring" Property="Visibility" Value="Visible"/></Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <Border Width="16" Height="16" CornerRadius="8" Background="{StaticResource DangerBrush}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-4,-4,0" IsHitTestVisible="False">
+                                <TextBlock Text="{Binding UnreadCount}" FontSize="10" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Popup IsOpen="{Binding NotificationsOpen, Mode=TwoWay}" PlacementTarget="{Binding ElementName=BellToggle}" Placement="Bottom" StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
+                                <Border Style="{StaticResource Card}" Margin="12,6,12,16" Width="340" Padding="0" TextElement.FontFamily="{StaticResource UiFont}" TextElement.FontSize="13" FlowDirection="{Binding L.FlowDirection}">
+                                    <StackPanel>
+                                        <TextBlock Text="{ui:T Notif_Title}" Style="{StaticResource H3}" Margin="16,14,16,10"/>
+                                        <Border Style="{StaticResource Divider}"/>
+                                        <ItemsControl ItemsSource="{Binding Notifications}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Padding="16,12" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                                            <ui:Badge Kind="{Binding Kind}" MinWidth="0" Padding="0" Margin="0,0,12,0" VerticalAlignment="Top">
+                                                                <ui:GlyphIcon Glyph="{Binding Glyph}" Width="32" Height="32"/>
+                                                            </ui:Badge>
+                                                            <StackPanel Grid.Column="1">
+                                                                <TextBlock Text="{Binding Title}" FontWeight="SemiBold"/>
+                                                                <TextBlock Text="{Binding Detail}" Style="{StaticResource Caption}" TextWrapping="Wrap" TextTrimming="None"/>
+                                                            </StackPanel>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Page host -->
+                <ContentControl x:Name="PageHost" Grid.Row="1" Content="{Binding Page}" IsTabStop="False" KeyboardNavigation.TabNavigation="Local"/>
+            </Grid>
+
+            <!-- Toast -->
+            <Border Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="24" Padding="16,12" CornerRadius="10" Background="{StaticResource NavyBrush}"
+                    Effect="{StaticResource DialogShadow}" MaxWidth="420" Visibility="{Binding ToastVisible, Converter={StaticResource BoolToVis}}" Panel.ZIndex="5"
+                    AutomationProperties.LiveSetting="Polite">
+                <StackPanel Orientation="Horizontal">
+                    <Border Width="26" Height="26" CornerRadius="13" VerticalAlignment="Center">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Background" Value="{StaticResource SuccessBrush}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ToastKind}" Value="Danger"><Setter Property="Background" Value="{StaticResource DangerBrush}"/></DataTrigger>
+                                    <DataTrigger Binding="{Binding ToastKind}" Value="Info"><Setter Property="Background" Value="{StaticResource NavyLightBrush}"/></DataTrigger>
+                                    <DataTrigger Binding="{Binding ToastKind}" Value="Warning"><Setter Property="Background" Value="{StaticResource WarningBrush}"/></DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <ui:GlyphIcon Glyph="{Binding ToastGlyph}" FontSize="13" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="{Binding ToastText}" Foreground="White" FontWeight="Medium" Margin="12,0,10,0" VerticalAlignment="Center" TextWrapping="Wrap" TextTrimming="None"/>
+                    <Button Style="{StaticResource IconButton}" Command="{Binding DismissToastCommand}" Width="26" Height="26" MinHeight="26" Foreground="#B3FFFFFF" AutomationProperties.Name="Dismiss">
+                        <ui:GlyphIcon Glyph="{x:Static ui:Icons.Close}" FontSize="11"/>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- ============ Dialog layer ============ -->
+        <Grid Visibility="{Binding HasDialog, Converter={StaticResource BoolToVis}}" Panel.ZIndex="20">
+            <Border Background="{StaticResource ScrimBrush}"/>
+            <ContentControl x:Name="DialogHost" Content="{Binding Dialog}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24"
+                            KeyboardNavigation.TabNavigation="Cycle" KeyboardNavigation.ControlTabNavigation="Cycle" IsTabStop="False"/>
+        </Grid>
+    </Grid>
+</Window>

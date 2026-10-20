@@ -1,0 +1,140 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="OrangeHoverBrush" Color="#E57F10"/>
+    <SolidColorBrush x:Key="OrangePressedBrush" Color="#C96E0B"/>
+    <SolidColorBrush x:Key="FocusRingBrush" Color="#661E4F8A"/>
+    <SolidColorBrush x:Key="DisabledBackBrush" Color="#E5EAF0"/>
+    <SolidColorBrush x:Key="DisabledTextBrush" Color="#9AA7B6"/>
+
+    <!-- Hollow dashed focus visual is replaced by the in-template ring below. -->
+    <Style x:Key="NoFocusVisual">
+        <Setter Property="Control.Template"><Setter.Value><ControlTemplate><Rectangle Visibility="Collapsed"/></ControlTemplate></Setter.Value></Setter>
+    </Style>
+
+    <!-- Base button: white surface, restrained border. Variants override Background/BorderBrush/Foreground and hover colours via Tag-free styles. -->
+    <Style x:Key="BaseButton" TargetType="Button">
+        <Setter Property="FocusVisualStyle" Value="{StaticResource NoFocusVisual}"/>
+        <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Padding" Value="16,0"/>
+        <Setter Property="MinHeight" Value="38"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Border x:Name="Ring" Margin="-2" CornerRadius="10" BorderThickness="2" BorderBrush="{StaticResource FocusRingBrush}" Visibility="Collapsed" IsHitTestVisible="False"/>
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" SnapsToDevicePixels="True">
+                            <ContentPresenter x:Name="Content" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              TextElement.Foreground="{TemplateBinding Foreground}"/>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Ring" Property="Visibility" Value="Visible"/></Trigger>
+                        <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Background" Value="{StaticResource SurfaceSubtleBrush}"/><Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource PlaceholderBrush}"/></Trigger>
+                        <Trigger Property="IsPressed" Value="True"><Setter TargetName="Bd" Property="Background" Value="{StaticResource BackgroundBrush}"/></Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource DisabledBackBrush}"/>
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource DisabledBackBrush}"/>
+                            <Setter TargetName="Content" Property="TextElement.Foreground" Value="{StaticResource DisabledTextBrush}"/>
+                            <Setter Property="Cursor" Value="Arrow"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Button" BasedOn="{StaticResource BaseButton}"/>
+    <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource BaseButton}"/>
+
+    <!-- Primary: orange fill. -->
+    <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="Background" Value="{StaticResource OrangeBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource OrangeBrush}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Border x:Name="Ring" Margin="-2" CornerRadius="10" BorderThickness="2" BorderBrush="{StaticResource FocusRingBrush}" Visibility="Collapsed" IsHitTestVisible="False"/>
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="8">
+                            <ContentPresenter x:Name="Content" Margin="{TemplateBinding Padding}" HorizontalAlignment="Center" VerticalAlignment="Center" TextElement.Foreground="{TemplateBinding Foreground}"/>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Ring" Property="Visibility" Value="Visible"/></Trigger>
+                        <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Background" Value="{StaticResource OrangeHoverBrush}"/><Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource OrangeHoverBrush}"/></Trigger>
+                        <Trigger Property="IsPressed" Value="True"><Setter TargetName="Bd" Property="Background" Value="{StaticResource OrangePressedBrush}"/><Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource OrangePressedBrush}"/></Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource DisabledBackBrush}"/><Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource DisabledBackBrush}"/>
+                            <Setter TargetName="Content" Property="TextElement.Foreground" Value="{StaticResource DisabledTextBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+        <Setter Property="Background" Value="{StaticResource SuccessBrush}"/><Setter Property="BorderBrush" Value="{StaticResource SuccessBrush}"/>
+    </Style>
+    <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+        <Setter Property="Background" Value="{StaticResource DangerBrush}"/><Setter Property="BorderBrush" Value="{StaticResource DangerBrush}"/>
+    </Style>
+
+    <!-- Outline: transparent, navy border/text. -->
+    <Style x:Key="OutlineButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{StaticResource NavyLightBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource NavyLightBrush}"/>
+    </Style>
+    <Style x:Key="DangerOutlineButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="Foreground" Value="{StaticResource DangerBrush}"/>
+        <Setter Property="BorderBrush" Value="#F2C4C4"/>
+    </Style>
+    <Style x:Key="WarnOutlineButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="Foreground" Value="{StaticResource OrangeBrush}"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+
+    <!-- Ghost: no chrome until hovered. -->
+    <Style x:Key="GhostButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource NavyLightBrush}"/>
+    </Style>
+
+    <!-- Icon button: square, glyph content. -->
+    <Style x:Key="IconButton" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="Width" Value="36"/>
+        <Setter Property="Height" Value="36"/>
+        <Setter Property="MinHeight" Value="36"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+    </Style>
+    <Style x:Key="IconButtonBordered" TargetType="Button" BasedOn="{StaticResource IconButton}">
+        <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+    </Style>
+    <Style x:Key="IconButtonDanger" TargetType="Button" BasedOn="{StaticResource IconButton}">
+        <Setter Property="Foreground" Value="{StaticResource DangerBrush}"/>
+        <Setter Property="Width" Value="30"/><Setter Property="Height" Value="30"/><Setter Property="MinHeight" Value="30"/>
+    </Style>
+    <Style x:Key="IconButtonSmall" TargetType="Button" BasedOn="{StaticResource IconButtonBordered}">
+        <Setter Property="Width" Value="28"/><Setter Property="Height" Value="28"/><Setter Property="MinHeight" Value="28"/>
+    </Style>
+</ResourceDictionary>

@@ -1,0 +1,453 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="clr-namespace:Dukkan.UI">
+
+    <!-- ===== Add / edit customer ===== -->
+    <DataTemplate DataType="{x:Type ui:CustomerEditViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <StackPanel>
+                <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{ui:T Cust_Add}"/>
+                <TextBlock Text="{ui:T Cust_Name}" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Name"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Name]}"/>
+                <TextBlock Text="{ui:T Col_Phone}" Style="{StaticResource FieldLabel}" Margin="0,14,0,6"/>
+                <TextBox Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Phone}" ui:Ui.Placeholder="01XXXXXXXXX" FlowDirection="LeftToRight" AutomationProperties.Name="Phone"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Phone]}"/>
+                <TextBlock Text="{ui:T Cust_Email}" Style="{StaticResource FieldLabel}" Margin="0,14,0,6"/>
+                <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Mail}" FlowDirection="LeftToRight" AutomationProperties.Name="Email"/>
+                <StackPanel Visibility="{Binding IsOwner, Converter={StaticResource BoolToVis}}" Margin="0,16,0,0">
+                    <CheckBox Style="{StaticResource SwitchStyle}" IsChecked="{Binding CreditEnabled}" Content="{ui:T Cust_AllowCredit}"/>
+                    <StackPanel Visibility="{Binding ShowLimit, Converter={StaticResource BoolToVis}}" Margin="0,10,0,0">
+                        <TextBlock Text="{ui:T Cust_CreditLimit}" Style="{StaticResource FieldLabel}"/>
+                        <TextBox Text="{Binding CreditLimit, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" AutomationProperties.Name="Credit limit"/>
+                        <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[CreditLimit]}"/>
+                    </StackPanel>
+                </StackPanel>
+                <Grid Margin="0,22,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="42"/>
+                    <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="{ui:T Action_Save}" Command="{Binding SaveCommand}" MinHeight="42" IsDefault="True"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- (customer collection dialogs live in DialogsCredit.xaml) -->
+
+    <!-- ===== Receive stock / adjust ===== -->
+    <DataTemplate DataType="{x:Type ui:StockAdjustViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="660">
+                <StackPanel>
+                    <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{ui:T Inv_NewMovement}"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                        <RadioButton GroupName="adjtype" Style="{StaticResource ChipRadio}" Content="{ui:T Mov_Purchase}" IsChecked="{Binding IsPurchase, Mode=TwoWay}"/>
+                        <RadioButton GroupName="adjtype" Style="{StaticResource ChipRadio}" Content="{ui:T Mov_Adjustment}" IsChecked="{Binding IsAdjustment, Mode=TwoWay}"/>
+                    </StackPanel>
+                    <TextBlock Text="{ui:T Inv_FindItem}" Style="{StaticResource FieldLabel}"/>
+                    <TextBox Text="{Binding Query, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Search}" ui:Ui.Placeholder="{ui:T Inv_FindPh}" AutomationProperties.Name="Find item"/>
+                    <ItemsControl ItemsSource="{Binding Results}" Margin="0,6,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Style="{StaticResource GhostButton}" HorizontalContentAlignment="Stretch" Foreground="{StaticResource TextPrimaryBrush}" MinHeight="40"
+                                        Command="{Binding DataContext.PickCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}">
+                                    <Grid>
+                                        <TextBlock Text="{Binding FullName}" HorizontalAlignment="Left"/>
+                                        <TextBlock Text="{Binding Stock}" FontWeight="SemiBold" HorizontalAlignment="Right" FlowDirection="LeftToRight"/>
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Border Visibility="{Binding HasSelected, Converter={StaticResource BoolToVis}}" Background="{StaticResource OrangeTintBrush}" CornerRadius="8" Padding="14,10" Margin="0,8,0,0">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Selected.FullName}" FontWeight="SemiBold"/>
+                            <TextBlock Style="{StaticResource Caption}"><Run Text="{ui:T Col_Stock}"/><Run Text=": "/><Run Text="{Binding Selected.Stock, Mode=OneWay}"/><Run Text="  ·  "/><Run Text="{Binding Selected.Sku, Mode=OneWay}"/></TextBlock>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Selected]}"/>
+                    <TextBlock Text="{ui:T Stock_Location}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                    <ComboBox ItemsSource="{Binding Locations}" SelectedValuePath="Id" SelectedValue="{Binding LocationId}"/>
+                    <ComboBox ItemsSource="{Binding Lots}" SelectedItem="{Binding Lot}" Margin="0,8,0,0" Visibility="{Binding IsAdjustment,Converter={StaticResource BoolToVis}}"/>
+                    <Grid Margin="0,14,0,0">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="{ui:T Inv_Qty}" Style="{StaticResource FieldLabel}"/>
+                            <TextBox Text="{Binding Qty, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Placeholder="+10 / -2" FlowDirection="LeftToRight" AutomationProperties.Name="Quantity"/>
+                            <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Qty]}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="{ui:T Field_CostPrice}" Style="{StaticResource FieldLabel}"/>
+                            <TextBox Text="{Binding Cost, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" AutomationProperties.Name="Unit cost"/>
+                            <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Cost]}"/>
+                        </StackPanel>
+                    </Grid>
+                    <StackPanel Visibility="{Binding IsPurchase, Converter={StaticResource BoolToVis}}">
+                        <Grid Margin="0,10,0,0">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="{ui:T Inv_Supplier}" Style="{StaticResource FieldLabel}"/>
+                                <ComboBox ItemsSource="{Binding Suppliers}" SelectedItem="{Binding SelectedSupplier}" DisplayMemberPath="Name" AutomationProperties.Name="Supplier"/>
+                                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[SelectedSupplier]}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2"><TextBlock Text="{ui:T Col_Reference}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding Reference, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" AutomationProperties.Name="Reference"/></StackPanel>
+                        </Grid>
+                        <Button Content="{ui:T Inv_ManageSuppliers}" Command="{Binding ManageSuppliersCommand}" HorizontalAlignment="Left" MinHeight="34" Margin="0,8,0,0"/>
+                        <TextBlock Text="{ui:T Inv_ReceiveNote}" Style="{StaticResource Caption}" TextWrapping="Wrap" TextTrimming="None" Margin="0,8,0,0"/>
+                        <CheckBox Content="{ui:T Inv_PaidFromRegister}" IsChecked="{Binding PaidFromRegister}" IsEnabled="{Binding HasShift}" Margin="0,12,0,0"/>
+                    </StackPanel>
+                    <StackPanel Visibility="{Binding IsAdjustment, Converter={StaticResource BoolToVis}}" Margin="0,10,0,0">
+                        <TextBlock Text="{ui:T Inv_Reason}" Style="{StaticResource FieldLabel}"/>
+                        <TextBox Text="{Binding Reason, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Reason"/>
+                        <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Reason]}"/>
+                    </StackPanel>
+                    <Grid Margin="0,22,0,0">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="42"/>
+                        <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="{Binding SaveLabel}" Command="{Binding SaveCommand}" MinHeight="42"/>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </DataTemplate>
+
+    <!-- ===== Add expense ===== -->
+    <DataTemplate DataType="{x:Type ui:AddExpenseViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <StackPanel>
+                <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{ui:T Exp_Add}"/>
+                <TextBlock Text="{ui:T Col_Category}" Style="{StaticResource FieldLabel}"/>
+                <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding Category}" AutomationProperties.Name="Category"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Category]}"/>
+                <TextBlock Text="{ui:T Col_Amount}" Style="{StaticResource FieldLabel}" Margin="0,14,0,6"/>
+                <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" AutomationProperties.Name="Amount"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Amount]}"/>
+                <TextBlock Text="{ui:T Col_Description}" Style="{StaticResource FieldLabel}" Margin="0,14,0,6"/>
+                <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Description"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Description]}"/>
+                <CheckBox Content="{ui:T Exp_FromRegister}" IsChecked="{Binding FromRegister}" IsEnabled="{Binding CanUseRegister}" Margin="0,14,0,0"/>
+                <Grid Margin="0,22,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="42"/>
+                    <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="{ui:T Action_Save}" Command="{Binding SaveCommand}" MinHeight="42" IsDefault="True"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ===== Owner cash in / out ===== -->
+    <DataTemplate DataType="{x:Type ui:CashMovementViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <StackPanel>
+                <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{ui:T Cash_Title}"/>
+                <TextBlock Text="{ui:T Cash_Note}" Style="{StaticResource Caption}" TextWrapping="Wrap" TextTrimming="None" Margin="0,-6,0,12"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                    <RadioButton GroupName="cashdir" Style="{StaticResource ChipRadio}" Content="{ui:T Cash_In}" IsChecked="{Binding CashIn, Mode=TwoWay}"/>
+                    <RadioButton GroupName="cashdir" Style="{StaticResource ChipRadio}" Content="{ui:T Cash_Out}" IsChecked="{Binding CashOut, Mode=TwoWay}"/>
+                </StackPanel>
+                <TextBlock Text="{ui:T Col_Amount}" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource AmountTextBox}" AutomationProperties.Name="Amount"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Amount]}"/>
+                <TextBlock Text="{ui:T Inv_Reason}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                <TextBox Text="{Binding Reason, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Reason"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Reason]}"/>
+                <Grid Margin="0,22,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="42"/>
+                    <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="{ui:T Action_Save}" Command="{Binding SaveCommand}" MinHeight="42" IsDefault="True"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ===== Invoice details ===== -->
+    <DataTemplate DataType="{x:Type ui:InvoiceViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <StackPanel>
+                <Grid Margin="0,0,0,16">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Invoice.Number}" Style="{StaticResource H2}" FlowDirection="LeftToRight" VerticalAlignment="Center"/>
+                        <ui:Badge Kind="{Binding Invoice.StatusKind}" Margin="12,0,0,0" VerticalAlignment="Center"><TextBlock Text="{Binding Invoice.Status}"/></ui:Badge>
+                    </StackPanel>
+                    <Button Style="{StaticResource IconButton}" HorizontalAlignment="Right" Margin="0,-6,-8,-6" Command="{Binding CloseCommand}" AutomationProperties.Name="Close">
+                        <ui:GlyphIcon Glyph="{x:Static ui:Icons.Close}" FontSize="14"/>
+                    </Button>
+                </Grid>
+                <Border Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16,12" Margin="0,0,0,14">
+                    <UniformGrid Columns="2" Rows="2">
+                        <StackPanel Margin="0,0,0,8"><TextBlock Text="{ui:T Col_Customer}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Invoice.Customer}" FontWeight="Medium"/></StackPanel>
+                        <StackPanel Margin="0,0,0,8"><TextBlock Text="{ui:T Col_Date}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Invoice.DateText}" FontWeight="Medium" FlowDirection="LeftToRight" HorizontalAlignment="Left"/></StackPanel>
+                        <StackPanel><TextBlock Text="{ui:T Col_Cashier}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Invoice.Cashier}" FontWeight="Medium"/></StackPanel>
+                        <StackPanel><TextBlock Text="{ui:T Col_Payment}" Style="{StaticResource Caption}"/><TextBlock Text="{Binding Invoice.Payment}" FontWeight="Medium"/></StackPanel>
+                    </UniformGrid>
+                </Border>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="220">
+                    <ItemsControl ItemsSource="{Binding Lines}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                    <StackPanel><TextBlock Text="{Binding Name}" FontWeight="Medium"/><TextBlock Text="{Binding Detail}" Style="{StaticResource Caption}" FlowDirection="LeftToRight" HorizontalAlignment="Left"/></StackPanel>
+                                    <TextBlock Grid.Column="1" Text="{Binding Total, Converter={StaticResource MoneyConv}}" FontWeight="SemiBold" VerticalAlignment="Center" FlowDirection="LeftToRight"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                <Border Style="{StaticResource Divider}" Margin="0,6,0,12"/>
+                <Grid Visibility="{Binding HasDiscount, Converter={StaticResource BoolToVis}}" Margin="0,0,0,6">
+                    <TextBlock Text="{ui:T Pos_DiscountLine}" Style="{StaticResource Caption}" FontSize="13"/>
+                    <TextBlock Text="{Binding Discount, Converter={StaticResource MoneyConv}}" HorizontalAlignment="Right" FlowDirection="LeftToRight"/>
+                </Grid>
+                <Grid>
+                    <TextBlock Text="{ui:T Pos_Total}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Total, Converter={StaticResource MoneyConv}}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Right" FlowDirection="LeftToRight"/>
+                </Grid>
+                <Grid Visibility="{Binding HasDebt, Converter={StaticResource BoolToVis}}" Margin="0,6,0,0">
+                    <TextBlock Text="{ui:T Pay_OnAccount}" Foreground="{StaticResource WarningTextBrush}" FontWeight="Medium"/>
+                    <TextBlock Text="{Binding Debt, Converter={StaticResource MoneyConv}}" FontWeight="SemiBold" Foreground="{StaticResource WarningTextBrush}" HorizontalAlignment="Right" FlowDirection="LeftToRight"/>
+                </Grid>
+                <Border Visibility="{Binding HasStatus, Converter={StaticResource BoolToVis}}" Background="{StaticResource InfoTintBrush}" CornerRadius="8" Padding="12,8" Margin="0,12,0,0">
+                    <TextBlock Text="{Binding Status}" TextWrapping="Wrap" TextTrimming="None" FontWeight="Medium"/>
+                </Border>
+                <Grid Margin="0,16,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="8"/><ColumnDefinition Width="*"/><ColumnDefinition Width="8"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Button Command="{Binding PrintCommand}" MinHeight="40"><StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Print}" FontSize="14" Margin="0,0,6,0"/><TextBlock Text="{ui:T Print_Copy}"/></StackPanel></Button>
+                    <Button Grid.Column="2" Command="{Binding PrintA4Command}" MinHeight="40" Content="{ui:T Print_A4}"/>
+                    <Button Grid.Column="4" Command="{Binding SavePdfCommand}" MinHeight="40" Content="{ui:T Print_Pdf}"/>
+                </Grid>
+                <Grid Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="8"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Button Style="{StaticResource DangerOutlineButton}" Command="{Binding ReturnCommand}" Content="{ui:T Ret_Title}" MinHeight="42"/>
+                    <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Command="{Binding CloseCommand}" Content="{ui:T Action_Close}" MinHeight="42"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ===== Return items ===== -->
+    <DataTemplate DataType="{x:Type ui:ReturnViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="660">
+                <StackPanel>
+                    <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{ui:T Ret_Title}"/>
+                    <TextBlock Text="{Binding Invoice.Number}" Style="{StaticResource Caption}" FlowDirection="LeftToRight" HorizontalAlignment="Left" Margin="0,-12,0,8"/>
+                    <TextBlock Text="{ui:T Ret_Note}" Style="{StaticResource Caption}" TextWrapping="Wrap" TextTrimming="None" Margin="0,0,0,10"/>
+                    <ItemsControl ItemsSource="{Binding Rows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,8">
+                                    <Grid>
+                                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="70"/><ColumnDefinition Width="110"/></Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontWeight="Medium"/>
+                                            <TextBlock Style="{StaticResource Caption}"><Run Text="{Binding Variant, Mode=OneWay}"/><Run Text="  ·  "/><Run Text="{ui:T Ret_Available}"/><Run Text=" "/><Run Text="{Binding Available, Mode=OneWay}"/></TextBlock>
+                                        </StackPanel>
+                                        <TextBox Grid.Column="1" Text="{Binding Qty, UpdateSourceTrigger=PropertyChanged}" MinHeight="34" HorizontalAlignment="Stretch" TextAlignment="Center" FlowDirection="LeftToRight" AutomationProperties.Name="Return quantity"/>
+                                        <CheckBox Grid.Column="2" IsChecked="{Binding Resalable}" Content="{ui:T Ret_Resalable}" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Margin="0,8,0,0" Visibility="{Binding Lots.Count,Converter={StaticResource CountToVis},ConverterParameter=NotEmpty}">
+                                            <TextBlock Text="{ui:T Stock_ReturnLot}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,0,0,6"/>
+                                            <ComboBox ItemsSource="{Binding Lots}" SelectedItem="{Binding Lot}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Rows]}"/>
+
+                    <!-- What this return will do: debt is cleared first, only the rest is refunded -->
+                    <Border Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,10,0,0" Visibility="{Binding HasPreview, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <TextBlock Text="{ui:T Ret_Value}"/><TextBlock Grid.Column="1" Text="{Binding PreviewTotal, Converter={StaticResource MoneyConv}}" FlowDirection="LeftToRight" FontWeight="SemiBold"/>
+                                <TextBlock Grid.Row="1" Text="{ui:T Ret_ClearsDebt}" Margin="0,4,0,0"/><TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding PreviewDebt, Converter={StaticResource MoneyConv}}" FlowDirection="LeftToRight" Margin="0,4,0,0"/>
+                                <TextBlock Grid.Row="2" Text="{ui:T Ret_Refunded}" Margin="0,4,0,0" FontWeight="SemiBold"/><TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding PreviewRefund, Converter={StaticResource MoneyConv}}" FlowDirection="LeftToRight" FontWeight="Bold" Margin="0,4,0,0" Foreground="{StaticResource OrangeBrush}"/>
+                            </Grid>
+                            <StackPanel Visibility="{Binding HasSchedule, Converter={StaticResource BoolToVis}}" Margin="0,10,0,0">
+                                <TextBlock Text="{ui:T Ret_NewSchedule}" Style="{StaticResource Caption}" Margin="0,0,0,4"/>
+                                <ItemsControl ItemsSource="{Binding RevisedSchedule}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,2">
+                                                <Grid.ColumnDefinitions><ColumnDefinition Width="28"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Seq}" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding DueDate}" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                <TextBlock Grid.Column="2" Text="{Binding Remaining, StringFormat=N2}" FlowDirection="LeftToRight" FontWeight="SemiBold"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Text="{ui:T Inv_Reason}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                    <TextBox Text="{Binding Reason, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Return reason"/>
+                    <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Reason]}"/>
+                    <TextBlock Text="{ui:T Ret_RefundMethod}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                    <ComboBox ItemsSource="{Binding Methods}" SelectedItem="{Binding SelectedMethod}" AutomationProperties.Name="Refund method"/>
+                    <TextBlock Text="{ui:T Pay_OriginalRefundHint}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,8,0,8"/>
+                    <ItemsControl ItemsSource="{Binding RefundPayments}"><ItemsControl.ItemTemplate><DataTemplate>
+                        <Grid Margin="0,3"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="{Binding Method}"/><TextBlock Grid.Column="1" Text="{Binding Amount,Converter={StaticResource MoneyConv}}" FlowDirection="LeftToRight" FontWeight="SemiBold"/></Grid>
+                    </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+                    <Grid Margin="0,22,0,0">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="44"/>
+                        <Button Grid.Column="2" Style="{StaticResource DangerButton}" Command="{Binding PostCommand}" Content="{ui:T Ret_Post}" MinHeight="44"/>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </DataTemplate>
+
+    <!-- ===== Print barcode labels ===== -->
+    <DataTemplate DataType="{x:Type ui:LabelPrintViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <StackPanel>
+                <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{ui:T Label_Title}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <RadioButton GroupName="labelmode" Style="{StaticResource ChipRadio}" Content="{ui:T Label_Roll}" IsChecked="{Binding RollMode, Mode=TwoWay}"/>
+                    <RadioButton GroupName="labelmode" Style="{StaticResource ChipRadio}" Content="{ui:T Label_Sheet}" IsChecked="{Binding SheetMode, Mode=TwoWay}"/>
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding SheetMode, Converter={StaticResource BoolToVis}}" Margin="12,0,0,0">
+                        <TextBlock Text="{ui:T Label_Skip}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBox Text="{Binding Skip, UpdateSourceTrigger=PropertyChanged}" Width="60" MinHeight="34" TextAlignment="Center" FlowDirection="LeftToRight" AutomationProperties.Name="Skip labels"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <Button Style="{StaticResource GhostButton}" Command="{Binding SetCopiesCommand}" CommandParameter="one" Content="{ui:T Label_OneEach}" MinHeight="32"/>
+                    <Button Style="{StaticResource GhostButton}" Command="{Binding SetCopiesCommand}" CommandParameter="stock" Content="{ui:T Label_StockEach}" MinHeight="32"/>
+                </StackPanel>
+                <Border Style="{StaticResource FlatCard}" ClipToBounds="True">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="300">
+                        <ItemsControl ItemsSource="{Binding Rows}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="14,6">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="80"/></Grid.ColumnDefinitions>
+                                            <StackPanel VerticalAlignment="Center"><TextBlock Text="{Binding Name}" FontWeight="Medium"/><TextBlock Text="{Binding Label}" Style="{StaticResource Caption}"/></StackPanel>
+                                            <TextBlock Grid.Column="1" Text="{Binding Variant.Barcode}" Style="{StaticResource Caption}" VerticalAlignment="Center" Margin="8,0" FlowDirection="LeftToRight"/>
+                                            <TextBox Grid.Column="2" Text="{Binding Copies, UpdateSourceTrigger=PropertyChanged}" MinHeight="34" TextAlignment="Center" FlowDirection="LeftToRight" AutomationProperties.Name="Copies"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+                <TextBlock Text="{Binding Message}" Style="{StaticResource ErrorText}" Margin="0,8,0,0"/>
+                <Grid Margin="0,18,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="44"/>
+                    <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Command="{Binding PrintCommand}" MinHeight="44">
+                        <StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Print}" FontSize="14" Margin="0,0,8,0"/><TextBlock Text="{ui:T Label_Print}"/></StackPanel>
+                    </Button>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ===== Users ===== -->
+    <DataTemplate DataType="{x:Type ui:UserEditViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <StackPanel>
+                <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{ui:T User_Add}"/>
+                <TextBlock Text="{ui:T Setup_OwnerName}" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Full name"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[DisplayName]}"/>
+                <TextBlock Text="{ui:T Login_Username}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" AutomationProperties.Name="Username"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Username]}"/>
+                <TextBlock Text="{ui:T Login_Password}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                <PasswordBox ui:Ui.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Lock}" AutomationProperties.Name="Password"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Password]}"/>
+                <TextBlock Text="{ui:T Setup_Confirm}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                <PasswordBox ui:Ui.Password="{Binding Confirm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Lock}" AutomationProperties.Name="Confirm password"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Confirm]}"/>
+                <CheckBox Style="{StaticResource SwitchStyle}" IsChecked="{Binding IsOwnerRole}" Content="{ui:T User_IsOwner}" Margin="0,14,0,0"/>
+                <Grid Margin="0,22,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="42"/>
+                    <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="{ui:T Action_Save}" Command="{Binding SaveCommand}" MinHeight="42" IsDefault="True"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type ui:ResetPasswordViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <StackPanel>
+                <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{ui:T User_ResetPassword}"/>
+                <TextBlock Text="{Binding User.DisplayName}" FontWeight="SemiBold" Margin="0,-6,0,12"/>
+                <TextBlock Text="{ui:T Recovery_NewPassword}" Style="{StaticResource FieldLabel}"/>
+                <PasswordBox ui:Ui.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Lock}" AutomationProperties.Name="New password"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Password]}"/>
+                <TextBlock Text="{ui:T Setup_Confirm}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                <PasswordBox ui:Ui.Password="{Binding Confirm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Lock}" AutomationProperties.Name="Confirm password"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Confirm]}"/>
+                <Grid Margin="0,22,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="42"/>
+                    <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="{ui:T Action_Save}" Command="{Binding SaveCommand}" MinHeight="42" IsDefault="True"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type ui:ChangePasswordViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <StackPanel>
+                <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{ui:T User_ChangeMine}"/>
+                <TextBlock Text="{ui:T User_Current}" Style="{StaticResource FieldLabel}"/>
+                <PasswordBox ui:Ui.Password="{Binding Current, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Lock}" AutomationProperties.Name="Current password"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Current]}"/>
+                <TextBlock Text="{ui:T Recovery_NewPassword}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                <PasswordBox ui:Ui.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Lock}" AutomationProperties.Name="New password"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Password]}"/>
+                <TextBlock Text="{ui:T Setup_Confirm}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                <PasswordBox ui:Ui.Password="{Binding Confirm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Lock}" AutomationProperties.Name="Confirm password"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Confirm]}"/>
+                <Grid Margin="0,22,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="42"/>
+                    <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="{ui:T Action_Save}" Command="{Binding SaveCommand}" MinHeight="42" IsDefault="True"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type ui:RecoveryCodesViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <StackPanel>
+                <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{ui:T Setup_CodesTitle}"/>
+                <TextBlock Text="{ui:T Setup_CodesNote}" Style="{StaticResource Caption}" TextWrapping="Wrap" TextTrimming="None" Margin="0,-6,0,12"/>
+                <Border Style="{StaticResource FlatCard}" Padding="20,12">
+                    <ItemsControl ItemsSource="{Binding Codes}">
+                        <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="2"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding}" FontFamily="Consolas" FontSize="17" FontWeight="SemiBold" Margin="0,5" FlowDirection="LeftToRight"/></DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+                <Grid Margin="0,18,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Button Command="{Binding CopyCommand}" Content="{ui:T Action_Copy}" MinHeight="42"/>
+                    <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Command="{Binding CloseCommand}" Content="{ui:T Setup_CodesSaved}" MinHeight="42"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type ui:RestoreDoneViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <StackPanel>
+                <TextBlock Text="{ui:T bk_restore_title}" Style="{StaticResource H2}" Margin="0,0,0,12"/>
+                <Border Background="{StaticResource SuccessTintBrush}" CornerRadius="10" Padding="16,12">
+                    <TextBlock Text="{Binding Summary}" TextWrapping="Wrap" TextTrimming="None" Foreground="{StaticResource SuccessTextBrush}" FontWeight="Medium"/>
+                </Border>
+                <Button Style="{StaticResource PrimaryButton}" Command="{Binding CloseAppCommand}" Content="{ui:T Action_CloseApp}" MinHeight="44" Margin="0,18,0,0"/>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+</ResourceDictionary>

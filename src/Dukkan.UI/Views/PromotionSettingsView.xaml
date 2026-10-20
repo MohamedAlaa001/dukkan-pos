@@ -1,0 +1,33 @@
+<UserControl x:Class="Dukkan.UI.Views.PromotionSettingsView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="clr-namespace:Dukkan.UI">
+ <TabControl Margin="0,14,0,0" SelectedIndex="{Binding Tab}">
+  <TabItem Header="{ui:T Promo_Title}">
+   <Grid Margin="0,14"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition/></Grid.RowDefinitions>
+    <Button Command="{Binding NewCommand}" Content="{ui:T Promo_New}" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" Margin="0,0,0,12"/>
+    <TextBlock Grid.Row="1" Text="{ui:T Promo_OrderHint}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,0,0,12"/>
+    <DataGrid Grid.Row="2" ItemsSource="{Binding Items}" Style="{StaticResource DataTable}" RowHeight="46"><DataGrid.Columns>
+     <DataGridTextColumn Header="{ui:T Promo_Name}" Binding="{Binding Name}" Width="*" MinWidth="150"/>
+     <DataGridTextColumn Header="{ui:T Promo_Type}" Binding="{Binding Kind}" Width="160"/>
+     <DataGridTextColumn Header="{ui:T Col_Status}" Binding="{Binding Status}" Width="100"/>
+     <DataGridTextColumn Header="{ui:T Promo_Priority}" Binding="{Binding Priority}" Width="140"/>
+     <DataGridTextColumn Header="{ui:T Promo_Coupon}" Binding="{Binding Coupon}" Width="130"/>
+     <DataGridTemplateColumn Width="90"><DataGridTemplateColumn.CellTemplate><DataTemplate><Button Content="{ui:T Action_Edit}" Command="{Binding DataContext.EditCommand,RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}"/></DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
+    </DataGrid.Columns></DataGrid>
+   </Grid>
+  </TabItem>
+  <TabItem Header="{ui:T Loyalty_Title}">
+   <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="0,20,20,20" MaxWidth="850" HorizontalAlignment="Left">
+    <CheckBox Content="{ui:T Loyalty_Enabled}" IsChecked="{Binding Enabled}" Margin="0,0,0,18"/>
+    <UniformGrid Columns="2">
+     <StackPanel Margin="0,0,20,16"><TextBlock Text="{ui:T Loyalty_EarnRate}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding EarnRate,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/></StackPanel>
+     <StackPanel Margin="0,0,20,16"><TextBlock Text="{ui:T Loyalty_PointValue}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding PointValue,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/></StackPanel>
+     <StackPanel Margin="0,0,20,16"><TextBlock Text="{ui:T Loyalty_Minimum}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding Minimum,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/></StackPanel>
+     <StackPanel Margin="0,0,20,16"><TextBlock Text="{ui:T Loyalty_ExpiryDays}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding ExpiryDays,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/></StackPanel>
+    </UniformGrid>
+    <TextBlock Text="{ui:T Loyalty_ConfigHint}" TextWrapping="Wrap" Style="{StaticResource Caption}" Margin="0,6,0,20"/>
+    <TextBlock Text="{Binding Error}" Style="{StaticResource ErrorText}" TextWrapping="Wrap"/>
+    <Button Command="{Binding SaveConfigCommand}" Content="{ui:T Action_Save}" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" MinWidth="140"/>
+   </StackPanel></ScrollViewer>
+  </TabItem>
+ </TabControl>
+</UserControl>

@@ -1,0 +1,119 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="clr-namespace:Dukkan.UI">
+
+    <!-- Loading spinner -->
+    <Style TargetType="ui:Spinner">
+        <Setter Property="Width" Value="28"/>
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="Foreground" Value="{StaticResource OrangeBrush}"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ui:Spinner">
+                    <Viewbox>
+                        <Grid Width="40" Height="40" RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform><RotateTransform x:Name="Rot"/></Grid.RenderTransform>
+                            <Ellipse Stroke="{StaticResource BorderBrush}" StrokeThickness="4"/>
+                            <Path Stroke="{TemplateBinding Foreground}" StrokeThickness="4" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  Data="M 20,2 A 18,18 0 0 1 38,20"/>
+                            <Grid.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="Forever">
+                                            <DoubleAnimation Storyboard.TargetName="Rot" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:0.9"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Grid.Triggers>
+                        </Grid>
+                    </Viewbox>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Overlay shown on top of a card/table while its data "loads". Place inside a Grid next to the content. -->
+    <Style x:Key="LoadingOverlay" TargetType="ContentControl">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Visibility" Value="Collapsed"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContentControl">
+                    <Border Background="#CCFFFFFF" CornerRadius="10">
+                        <ui:Spinner HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Empty state -->
+    <Style TargetType="ui:EmptyState">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ui:EmptyState">
+                    <StackPanel MaxWidth="320" Margin="24">
+                        <Border Width="64" Height="64" CornerRadius="32" Background="{StaticResource OrangeTintBrush}" HorizontalAlignment="Center">
+                            <ui:GlyphIcon Glyph="{TemplateBinding Glyph}" FontSize="26" Foreground="{StaticResource OrangeBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="{TemplateBinding Title}" Style="{StaticResource H3}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,16,0,4" TextWrapping="Wrap"/>
+                        <TextBlock Text="{TemplateBinding Message}" Style="{StaticResource Caption}" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center"/>
+                        <ContentPresenter Margin="0,16,0,0" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Validation message under an input (collapses when empty). -->
+    <Style x:Key="ErrorText" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="Foreground" Value="{StaticResource DangerBrush}"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Margin" Value="0,4,0,0"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Summary card: caption, value, delta and tinted icon tile. -->
+    <Style TargetType="ui:StatCard">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Tint" Value="{StaticResource SuccessTintBrush}"/>
+        <Setter Property="Accent" Value="{StaticResource SuccessBrush}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ui:StatCard">
+                    <Border Style="{StaticResource Card}" Padding="18,16">
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="{TemplateBinding Caption}" Style="{StaticResource Caption}" FontSize="13"/>
+                                <TextBlock Text="{TemplateBinding Value}" Style="{StaticResource StatValue}" Margin="0,4,0,0" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                <StackPanel x:Name="DeltaRow" Orientation="Horizontal" Margin="0,6,0,0">
+                                    <ui:GlyphIcon x:Name="DeltaIcon" Glyph="&#xE74A;" FontSize="12" Foreground="{StaticResource SuccessBrush}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                    <TextBlock x:Name="DeltaText" Text="{TemplateBinding Delta}" Foreground="{StaticResource SuccessBrush}" FontWeight="Medium"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <Border Grid.Column="1" Width="44" Height="44" CornerRadius="10" Background="{TemplateBinding Tint}" VerticalAlignment="Top">
+                                <ui:GlyphIcon Glyph="{TemplateBinding Glyph}" FontSize="20" Foreground="{TemplateBinding Accent}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Delta" Value=""><Setter TargetName="DeltaRow" Property="Visibility" Value="Collapsed"/></Trigger>
+                        <Trigger Property="DeltaKind" Value="Danger"><Setter TargetName="DeltaIcon" Property="Glyph" Value="&#xE74B;"/><Setter TargetName="DeltaIcon" Property="Foreground" Value="{StaticResource DangerBrush}"/><Setter TargetName="DeltaText" Property="Foreground" Value="{StaticResource DangerBrush}"/></Trigger>
+                        <Trigger Property="DeltaKind" Value="Neutral"><Setter TargetName="DeltaIcon" Property="Visibility" Value="Collapsed"/><Setter TargetName="DeltaText" Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/></Trigger>
+                        <Trigger Property="Delta" Value="{x:Null}"><Setter TargetName="DeltaRow" Property="Visibility" Value="Collapsed"/></Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

@@ -1,0 +1,90 @@
+<UserControl x:Class="Dukkan.UI.Views.LoginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:Dukkan.UI">
+    <Grid Background="{StaticResource SurfaceBrush}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="46*"/><ColumnDefinition Width="54*"/></Grid.ColumnDefinitions>
+
+        <!-- Brand panel: navy with a grid of category pictures -->
+        <Border>
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0.6,1">
+                    <GradientStop Color="#0F2E57" Offset="0"/>
+                    <GradientStop Color="#0A2243" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid>
+                <UniformGrid Columns="4" Rows="2" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="40,56,40,0" MaxWidth="500" FlowDirection="LeftToRight">
+                    <Border Background="#F2F6FB" CornerRadius="18" Margin="7" Padding="14"><Image Source="/Dukkan;component/Assets/Icons/basket.png" RenderOptions.BitmapScalingMode="HighQuality" /></Border>
+                    <Border Background="#F2F6FB" CornerRadius="18" Margin="7" Padding="14"><Image Source="/Dukkan;component/Assets/Icons/apple.png" RenderOptions.BitmapScalingMode="HighQuality" /></Border>
+                    <Border Background="#F2F6FB" CornerRadius="18" Margin="7" Padding="14"><Image Source="/Dukkan;component/Assets/Icons/milk.png" RenderOptions.BitmapScalingMode="HighQuality" /></Border>
+                    <Border Background="#F2F6FB" CornerRadius="18" Margin="7" Padding="14"><Image Source="/Dukkan;component/Assets/Icons/bread.png" RenderOptions.BitmapScalingMode="HighQuality" /></Border>
+                    <Border Background="#F2F6FB" CornerRadius="18" Margin="7" Padding="14"><Image Source="/Dukkan;component/Assets/Icons/drink.png" RenderOptions.BitmapScalingMode="HighQuality" /></Border>
+                    <Border Background="#F2F6FB" CornerRadius="18" Margin="7" Padding="14"><Image Source="/Dukkan;component/Assets/Icons/pharmacy.png" RenderOptions.BitmapScalingMode="HighQuality" /></Border>
+                    <Border Background="#F2F6FB" CornerRadius="18" Margin="7" Padding="14"><Image Source="/Dukkan;component/Assets/Icons/shirt.png" RenderOptions.BitmapScalingMode="HighQuality" /></Border>
+                    <Border Background="#F2F6FB" CornerRadius="18" Margin="7" Padding="14"><Image Source="/Dukkan;component/Assets/Icons/shoe.png" RenderOptions.BitmapScalingMode="HighQuality" /></Border>
+                    </UniformGrid>
+                <Border>
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Color="#000F2E57" Offset="0.25"/>
+                            <GradientStop Color="#F00F2E57" Offset="0.78"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+                <StackPanel VerticalAlignment="Bottom" Margin="56,0,40,56">
+                    <Image Source="/Dukkan;component/Assets/logo.png" Width="84" Height="84" HorizontalAlignment="Left" Margin="0,0,0,16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <TextBlock Text="{ui:T Brand_Name}" FontSize="56" FontWeight="Bold" Foreground="White" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                    <TextBlock Text="{Binding StoreName, Source={x:Static ui:Localizer.Instance}}" FontSize="22" FontWeight="Medium" Foreground="White" Margin="0,2,0,28"/>
+                    <TextBlock Text="{ui:T Login_Tag1}" FontSize="19" Foreground="#E6FFFFFF" Margin="0,0,0,6"/>
+                    <TextBlock Text="{ui:T Login_Tag2}" FontSize="19" Foreground="#E6FFFFFF" Margin="0,0,0,6"/>
+                    <TextBlock Text="{ui:T Login_Tag3}" FontSize="19" Foreground="#E6FFFFFF"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Form -->
+        <Grid Grid.Column="1">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="400" Margin="24">
+                <TextBlock Text="{ui:T Login_Welcome}" FontSize="30" FontWeight="Bold"/>
+                <TextBlock Text="{ui:T Login_Sub}" FontSize="17" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,36"/>
+
+                <TextBlock Text="{ui:T Login_Username}" Style="{StaticResource FieldLabel}"/>
+                <TextBox x:Name="UserBox" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Person}"
+                         ui:Ui.Placeholder="{ui:T Login_UsernamePh}" MinHeight="46" AutomationProperties.Name="Username"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Username]}"/>
+
+                <TextBlock Text="{ui:T Login_Password}" Style="{StaticResource FieldLabel}" Margin="0,18,0,6"/>
+                <Grid>
+                    <PasswordBox x:Name="PwdBox" ui:Ui.Icon="{x:Static ui:Icons.Lock}" ui:Ui.Placeholder="{ui:T Login_PasswordPh}" MinHeight="46" Padding="10,0,44,0"
+                                 ui:Ui.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Password"
+                                 Visibility="{Binding ShowPassword, Converter={StaticResource InvBoolToVis}}"/>
+                    <TextBox x:Name="PwdText" Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Lock}" ui:Ui.Placeholder="{ui:T Login_PasswordPh}"
+                             MinHeight="46" Padding="10,0,44,0" Visibility="{Binding ShowPassword, Converter={StaticResource BoolToVis}}" AutomationProperties.Name="Password"/>
+                    <Button Style="{StaticResource IconButton}" Command="{Binding ToggleShowCommand}" HorizontalAlignment="Right" Margin="0,0,6,0" AutomationProperties.Name="Show or hide password"
+                            Click="Eye_Click">
+                        <ui:GlyphIcon Glyph="{Binding EyeGlyph}"/>
+                    </Button>
+                </Grid>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Password]}"/>
+
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Message}" Margin="0,12,0,0"/>
+                <Button Style="{StaticResource GhostButton}" Command="{Binding ForgotCommand}" HorizontalAlignment="Left" Margin="-12,6,0,18" MinHeight="32" Content="{ui:T Login_Forgot}"/>
+
+                <Button Style="{StaticResource PrimaryButton}" Command="{Binding SignInCommand}" IsDefault="True" MinHeight="48" FontSize="15">
+                    <Grid>
+                        <TextBlock Text="{ui:T Login_SignIn}" FontSize="15" Visibility="{Binding IsBusy, Converter={StaticResource InvBoolToVis}}"/>
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}">
+                            <ui:Spinner Width="18" Height="18" Foreground="White" Margin="0,0,10,0"/>
+                            <TextBlock Text="{ui:T Login_SigningIn}" FontSize="15"/>
+                        </StackPanel>
+                    </Grid>
+                </Button>
+                <TextBlock Text="{ui:T Login_Footer}" Style="{StaticResource Caption}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" TextTrimming="None" Margin="0,36,0,0"/>
+            </StackPanel>
+            <Button Style="{StaticResource SecondaryButton}" Click="Lang_Click" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="20" MinHeight="34" Padding="12,0">
+                <StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Globe}" Margin="0,0,8,0"/><TextBlock Text="{ui:T Lang_Toggle}" FontWeight="SemiBold"/></StackPanel>
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>

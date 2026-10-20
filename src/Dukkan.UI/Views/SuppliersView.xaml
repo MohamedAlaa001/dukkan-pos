@@ -1,0 +1,266 @@
+<UserControl x:Class="Dukkan.UI.Views.SuppliersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:Dukkan.UI"
+             xmlns:v="clr-namespace:Dukkan.UI.Views">
+    <Grid>
+        <!-- ===== List + due view ===== -->
+        <Grid Margin="24,12,24,24" Visibility="{Binding IsListVisible, Converter={StaticResource BoolToVis}}">
+            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+            <Grid Margin="0,0,0,14">
+                <TextBlock Text="{ui:T Nav_Suppliers}" Style="{StaticResource H1}" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Command="{Binding OperationsCommand}" Content="{ui:T PO_Operations}" Margin="0,0,10,0"/>
+                    <Button Command="{Binding ExportCommand}" MinWidth="140" Margin="0,0,10,0">
+                        <StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Download}" FontSize="14" Margin="0,0,8,0"/><TextBlock Text="{ui:T Sup_Export}"/></StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource PrimaryButton}" Command="{Binding AddCommand}" MinWidth="160">
+                        <StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Add}" FontSize="13" Margin="0,0,8,0"/><TextBlock Text="{ui:T Sup_Add}" FontWeight="SemiBold"/></StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="1" Margin="0,0,0,16">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="14"/><ColumnDefinition Width="*"/><ColumnDefinition Width="14"/><ColumnDefinition Width="*"/><ColumnDefinition Width="14"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                <ui:StatCard Caption="{ui:T Sup_TotalOwed}" Value="{Binding TotalOwed, StringFormat=N0}" Glyph="{x:Static ui:Icons.Money}" Tint="{StaticResource OrangeTintBrush}" Accent="{StaticResource OrangeBrush}"/>
+                <ui:StatCard Grid.Column="2" Caption="{ui:T Sup_DueToday}" Value="{Binding DueToday, StringFormat=N0}" Glyph="{x:Static ui:Icons.Calendar}" Tint="{StaticResource InfoTintBrush}" Accent="{StaticResource NavyLightBrush}"/>
+                <ui:StatCard Grid.Column="4" Caption="{ui:T Sup_OverdueTotal}" Value="{Binding OverdueTotal, StringFormat=N0}" Glyph="{x:Static ui:Icons.Warning}" Tint="{StaticResource DangerTintBrush}" Accent="{StaticResource DangerBrush}"/>
+                <ui:StatCard Grid.Column="6" Caption="{ui:T Sup_Count}" Value="{Binding SupplierCount}" Glyph="{x:Static ui:Icons.Shop}" Tint="{StaticResource SuccessTintBrush}" Accent="{StaticResource SuccessBrush}"/>
+            </Grid>
+
+            <Border Grid.Row="2" Style="{StaticResource Card}" Padding="20,4,20,0" ClipToBounds="True">
+                <TabControl SelectedIndex="{Binding Tab, Mode=TwoWay}">
+                    <TabItem Header="{ui:T Sup_TabList}">
+                        <Grid Margin="0,12,0,0">
+                            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*" MaxWidth="420"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Search}" ui:Ui.Placeholder="{ui:T Sup_Search}" AutomationProperties.Name="Search suppliers"/>
+                                <CheckBox Grid.Column="2" Content="{ui:T Sup_ShowArchived}" IsChecked="{Binding ShowArchived}" VerticalAlignment="Center"/>
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <DataGrid Style="{StaticResource DataTable}" ItemsSource="{Binding Pager.Items}" RowHeight="50" AutomationProperties.Name="Suppliers table">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="{ui:T Col_Name}" Binding="{Binding Name}" Width="*" MinWidth="180" ElementStyle="{StaticResource CellText}"/>
+                                        <DataGridTextColumn Header="{ui:T Col_Phone}" Binding="{Binding Phone}" Width="140" ElementStyle="{StaticResource Ltr}"/>
+                                        <DataGridTextColumn Header="{ui:T Col_TotalPurchases}" Binding="{Binding TotalPurchases, StringFormat=N0}" Width="140" ElementStyle="{StaticResource CellNumber}" HeaderStyle="{StaticResource GridHeaderRight}"/>
+                                        <DataGridTextColumn Header="{ui:T Col_Paid}" Binding="{Binding TotalPaid, StringFormat=N0}" Width="120" ElementStyle="{StaticResource CellNumber}" HeaderStyle="{StaticResource GridHeaderRight}"/>
+                                        <DataGridTemplateColumn Header="{ui:T Col_Remaining}" Width="130" HeaderStyle="{StaticResource GridHeaderRight}">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate><TextBlock Text="{Binding Balance, StringFormat=N0}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="SemiBold" FlowDirection="LeftToRight"/></DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTemplateColumn Header="{ui:T Col_Status}" Width="170">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <ui:Badge Kind="{Binding StatusKind}"><TextBlock Text="{Binding Status}"/></ui:Badge>
+                                                        <ui:Badge Kind="Danger" Margin="6,0,0,0" Visibility="{Binding HasOverdue, Converter={StaticResource BoolToVis}}"><TextBlock Text="{ui:T Sup_Overdue}"/></ui:Badge>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTemplateColumn Width="110">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Style="{StaticResource GhostButton}" MinHeight="32" Padding="10,0" HorizontalAlignment="Right" Command="{Binding DataContext.OpenCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}">
+                                                        <StackPanel Orientation="Horizontal"><TextBlock Text="{ui:T Action_View}" FontWeight="SemiBold"/><ui:GlyphIcon Glyph="{Binding NextGlyph, Source={x:Static ui:Localizer.Instance}}" FontSize="10" Margin="6,0,0,0"/></StackPanel>
+                                                    </Button>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <ui:EmptyState Glyph="{x:Static ui:Icons.Shop}" Title="{ui:T Empty_NoSuppliers}" Message="{ui:T Empty_NoSuppliersMsg}" Visibility="{Binding Pager.TotalCount, Converter={StaticResource CountToVis}}"/>
+                            </Grid>
+                            <v:PaginationBar Grid.Row="2" DataContext="{Binding Pager}"/>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem Header="{ui:T Sup_TabDue}">
+                        <Grid Margin="0,12,0,0">
+                            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition Width="10"/><ColumnDefinition Width="200"/><ColumnDefinition Width="10"/><ColumnDefinition Width="130"/><ColumnDefinition Width="10"/><ColumnDefinition Width="130"/></Grid.ColumnDefinitions>
+                                <ComboBox ItemsSource="{Binding StatusFilters}" SelectedItem="{Binding StatusFilter}" AutomationProperties.Name="Status filter"/>
+                                <ComboBox Grid.Column="2" ItemsSource="{Binding FilterSuppliers}" SelectedItem="{Binding FilterSupplier}" AutomationProperties.Name="Supplier filter"/>
+                                <TextBox Grid.Column="4" Text="{Binding From, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Placeholder="{ui:T Sup_From}" FlowDirection="LeftToRight" AutomationProperties.Name="From date"/>
+                                <TextBox Grid.Column="6" Text="{Binding To, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Placeholder="{ui:T Sup_To}" FlowDirection="LeftToRight" AutomationProperties.Name="To date"/>
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <DataGrid Style="{StaticResource DataTable}" ItemsSource="{Binding DuePager.Items}" RowHeight="48" AutomationProperties.Name="Outstanding invoices">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="{ui:T Col_Supplier}" Binding="{Binding Supplier}" Width="*" MinWidth="140" ElementStyle="{StaticResource CellText}"/>
+                                        <DataGridTextColumn Header="{ui:T Col_Invoice}" Binding="{Binding Number}" Width="120" ElementStyle="{StaticResource Ltr}"/>
+                                        <DataGridTextColumn Header="{ui:T Col_DueDate}" Binding="{Binding Due}" Width="120" ElementStyle="{StaticResource Ltr}"/>
+                                        <DataGridTextColumn Header="{ui:T Col_Total}" Binding="{Binding Total, StringFormat=N0}" Width="110" ElementStyle="{StaticResource CellNumber}" HeaderStyle="{StaticResource GridHeaderRight}"/>
+                                        <DataGridTextColumn Header="{ui:T Col_Paid}" Binding="{Binding Paid, StringFormat=N0}" Width="100" ElementStyle="{StaticResource CellNumber}" HeaderStyle="{StaticResource GridHeaderRight}"/>
+                                        <DataGridTextColumn Header="{ui:T Col_Remaining}" Binding="{Binding Outstanding, StringFormat=N0}" Width="110" ElementStyle="{StaticResource CellNumber}" HeaderStyle="{StaticResource GridHeaderRight}"/>
+                                        <DataGridTemplateColumn Header="{ui:T Col_Status}" Width="190">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <ui:Badge Kind="{Binding StatusKind}"><TextBlock Text="{Binding Status}"/></ui:Badge>
+                                                        <ui:Badge Kind="Danger" Margin="6,0,0,0" Visibility="{Binding Overdue, Converter={StaticResource BoolToVis}}"><TextBlock Text="{ui:T Sup_Overdue}"/></ui:Badge>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <ui:EmptyState Glyph="{x:Static ui:Icons.Document}" Title="{ui:T Empty_NoDue}" Message="{ui:T Empty_NoDueMsg}" Visibility="{Binding DuePager.TotalCount, Converter={StaticResource CountToVis}}"/>
+                            </Grid>
+                            <v:PaginationBar Grid.Row="2" DataContext="{Binding DuePager}"/>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Border>
+        </Grid>
+
+        <!-- ===== Supplier details ===== -->
+        <Grid Margin="24,12,24,24" DataContext="{Binding Details}" Visibility="{Binding DataContext.IsDetailsVisible, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVis}}">
+            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+            <TextBlock Text="{ui:T Sup_Details}" Style="{StaticResource H1}" Margin="0,0,0,10"/>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,14">
+                <Button Style="{StaticResource IconButton}" Command="{Binding DataContext.BackCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Width="32" Height="32" MinHeight="32" Margin="0,0,6,0" AutomationProperties.Name="Back to suppliers">
+                    <ui:GlyphIcon Glyph="{Binding BackGlyph, Source={x:Static ui:Localizer.Instance}}" FontSize="14"/>
+                </Button>
+                <TextBlock Text="{ui:T Nav_Suppliers}" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                <ui:GlyphIcon Glyph="{Binding NextGlyph, Source={x:Static ui:Localizer.Instance}}" FontSize="10" Foreground="{StaticResource PlaceholderBrush}" Margin="10,0" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Supplier.Name}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <Grid Grid.Row="2" Margin="0,0,0,16">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="1.4*"/><ColumnDefinition Width="14"/><ColumnDefinition Width="*"/><ColumnDefinition Width="14"/><ColumnDefinition Width="*"/><ColumnDefinition Width="14"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                <Border Style="{StaticResource Card}" Padding="18,16">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Supplier.Name}" Style="{StaticResource H2}" Margin="0,0,10,0"/><ui:Badge Kind="{Binding Supplier.StatusKind}" VerticalAlignment="Center"><TextBlock Text="{Binding Supplier.Status}"/></ui:Badge></StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Phone}" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,8,0"/><TextBlock Text="{Binding Supplier.Phone}" FlowDirection="LeftToRight"/></StackPanel>
+                        <TextBlock Text="{Binding Supplier.Address}" Margin="0,4,0,0" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" TextTrimming="None"/>
+                        <TextBlock Text="{Binding Supplier.Notes}" Margin="0,4,0,0" Style="{StaticResource Caption}" TextWrapping="Wrap" TextTrimming="None"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0" Visibility="{Binding Supplier.HasOpening, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="{ui:T Sup_Opening}" Style="{StaticResource Caption}"/><TextBlock Text=": " Style="{StaticResource Caption}"/>
+                            <TextBlock Text="{Binding Supplier.Opening, StringFormat=N0}" Style="{StaticResource Caption}" FontWeight="SemiBold" FlowDirection="LeftToRight"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <ui:StatCard Grid.Column="2" Caption="{ui:T Sup_TotalPurchases}" Value="{Binding Supplier.TotalPurchases, StringFormat=N0}" Glyph="{x:Static ui:Icons.Bag}" Tint="{StaticResource OrangeTintBrush}" Accent="{StaticResource OrangeBrush}"/>
+                <ui:StatCard Grid.Column="4" Caption="{ui:T Col_Paid}" Value="{Binding Supplier.TotalPaid, StringFormat=N0}" Glyph="{x:Static ui:Icons.Check}" Tint="{StaticResource SuccessTintBrush}" Accent="{StaticResource SuccessBrush}"/>
+                <ui:StatCard Grid.Column="6" Caption="{ui:T Col_Remaining}" Value="{Binding Supplier.Balance, StringFormat=N0}" Glyph="{x:Static ui:Icons.Money}" Tint="{StaticResource DangerTintBrush}" Accent="{StaticResource DangerBrush}"/>
+            </Grid>
+
+            <Border Grid.Row="3" Style="{StaticResource Card}" Padding="20,4,20,0" ClipToBounds="True">
+                <DockPanel>
+                    <WrapPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,10,0,14">
+                        <Button Command="{Binding OperationsCommand}" Content="{ui:T PO_Orders}" Margin="0,0,10,0"/>
+                        <Button Command="{Binding ReturnCommand}" Content="{ui:T SR_Returns}" Margin="0,0,10,0"/>
+                        <Button Command="{Binding ArchiveCommand}" Margin="0,0,10,0" MinWidth="110"><TextBlock Text="{Binding ArchiveText}"/></Button>
+                        <Button Command="{Binding EditCommand}" Margin="0,0,10,0" MinWidth="110"><StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Edit}" FontSize="14" Margin="0,0,8,0"/><TextBlock Text="{ui:T Action_Edit}"/></StackPanel></Button>
+                        <Button Command="{Binding OpeningCommand}" Margin="0,0,10,0" MinWidth="130"><TextBlock Text="{ui:T Sup_Opening}"/></Button>
+                        <Button Command="{Binding PayCommand}" Margin="0,0,10,0" MinWidth="150"><TextBlock Text="{ui:T Sup_PayNow}" FontWeight="SemiBold"/></Button>
+                        <Button Style="{StaticResource PrimaryButton}" Command="{Binding PurchaseCommand}" MinWidth="170"><TextBlock Text="{ui:T Sup_NewPurchase}" FontWeight="SemiBold"/></Button>
+                    </WrapPanel>
+                    <TabControl>
+                        <TabItem Header="{ui:T Sup_TabInvoices}">
+                            <DataGrid Style="{StaticResource DataTable}" ItemsSource="{Binding Invoices}" RowHeight="46" Margin="0,8,0,0" AutomationProperties.Name="Purchase invoices">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="{ui:T Col_Invoice}" Binding="{Binding Number}" Width="110" ElementStyle="{StaticResource Ltr}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Reference}" Binding="{Binding Reference}" Width="*" MinWidth="100" ElementStyle="{StaticResource CellText}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Date}" Binding="{Binding Date}" Width="110" ElementStyle="{StaticResource Ltr}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_DueDate}" Binding="{Binding Due}" Width="110" ElementStyle="{StaticResource Ltr}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Total}" Binding="{Binding Total, StringFormat=N0}" Width="100" ElementStyle="{StaticResource CellNumber}" HeaderStyle="{StaticResource GridHeaderRight}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Paid}" Binding="{Binding Paid, StringFormat=N0}" Width="90" ElementStyle="{StaticResource CellNumber}" HeaderStyle="{StaticResource GridHeaderRight}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Remaining}" Binding="{Binding Outstanding, StringFormat=N0}" Width="100" ElementStyle="{StaticResource CellNumber}" HeaderStyle="{StaticResource GridHeaderRight}"/>
+                                    <DataGridTemplateColumn Header="{ui:T Col_Status}" Width="190">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <ui:Badge Kind="{Binding StatusKind}"><TextBlock Text="{Binding Status}"/></ui:Badge>
+                                                    <ui:Badge Kind="Danger" Margin="6,0,0,0" Visibility="{Binding Overdue, Converter={StaticResource BoolToVis}}"><TextBlock Text="{ui:T Sup_Overdue}"/></ui:Badge>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Width="100">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                                    <Button Style="{StaticResource IconButtonSmall}" Command="{Binding DataContext.ViewInvoiceCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" AutomationProperties.Name="View invoice">
+                                                        <ui:GlyphIcon Glyph="{x:Static ui:Icons.Eye}" FontSize="13"/>
+                                                    </Button>
+                                                    <Button Style="{StaticResource IconButtonSmall}" Margin="6,0,0,0" Visibility="{Binding CanReverse, Converter={StaticResource BoolToVis}}" Command="{Binding DataContext.ReverseInvoiceCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" AutomationProperties.Name="Reverse invoice">
+                                                        <ui:GlyphIcon Glyph="{x:Static ui:Icons.History}" FontSize="13"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </TabItem>
+                        <TabItem Header="{ui:T Sup_TabPayments}">
+                            <DataGrid Style="{StaticResource DataTable}" ItemsSource="{Binding Payments}" RowHeight="46" Margin="0,8,0,0" AutomationProperties.Name="Supplier payments">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="{ui:T Col_Reference}" Binding="{Binding Number}" Width="110" ElementStyle="{StaticResource Ltr}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Date}" Binding="{Binding Date}" Width="110" ElementStyle="{StaticResource Ltr}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Payment}" Binding="{Binding MethodText}" Width="110" ElementStyle="{StaticResource CellText}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Invoice}" Binding="{Binding Allocated}" Width="*" MinWidth="120" ElementStyle="{StaticResource Ltr}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Amount}" Binding="{Binding Amount, StringFormat=N0}" Width="110" ElementStyle="{StaticResource CellNumber}" HeaderStyle="{StaticResource GridHeaderRight}"/>
+                                    <DataGridTemplateColumn Width="150">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                                    <ui:Badge Kind="Neutral" Visibility="{Binding Reversed, Converter={StaticResource BoolToVis}}"><TextBlock Text="{ui:T Sup_Reversed}"/></ui:Badge>
+                                                    <Button Style="{StaticResource IconButtonSmall}" Visibility="{Binding CanReverse, Converter={StaticResource BoolToVis}}" Command="{Binding DataContext.ReversePaymentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" AutomationProperties.Name="Reverse payment">
+                                                        <ui:GlyphIcon Glyph="{x:Static ui:Icons.History}" FontSize="13"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </TabItem>
+                        <TabItem Header="{ui:T Sup_TabStatement}">
+                            <DataGrid Style="{StaticResource DataTable}" ItemsSource="{Binding Statement}" RowHeight="44" Margin="0,8,0,0" AutomationProperties.Name="Supplier statement">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="{ui:T Col_Date}" Binding="{Binding Date}" Width="120" ElementStyle="{StaticResource Ltr}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Reference}" Binding="{Binding Document}" Width="130" ElementStyle="{StaticResource Ltr}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Type}" Binding="{Binding Type}" Width="*" ElementStyle="{StaticResource CellText}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Amount}" Binding="{Binding Amount, StringFormat=N2}" Width="130" ElementStyle="{StaticResource CellNumber}" HeaderStyle="{StaticResource GridHeaderRight}"/>
+                                    <DataGridTextColumn Header="{ui:T Cust_Running}" Binding="{Binding Running, StringFormat=N2}" Width="140" ElementStyle="{StaticResource CellNumber}" HeaderStyle="{StaticResource GridHeaderRight}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </TabItem>
+                        <TabItem Header="{ui:T PO_Orders}">
+                            <DataGrid Style="{StaticResource DataTable}" ItemsSource="{Binding Orders}" RowHeight="44" Margin="0,8,0,0" ColumnHeaderStyle="{StaticResource SupplierLtrHeader}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="{ui:T Col_Reference}" Binding="{Binding Number}" Width="140" ElementStyle="{StaticResource Ltr}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Status}" Binding="{Binding Status}" Width="*" ElementStyle="{StaticResource CellText}"/>
+                                    <DataGridTextColumn Header="{ui:T PO_Expected}" Binding="{Binding Date}" Width="160" ElementStyle="{StaticResource Ltr}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Total}" Binding="{Binding Total, StringFormat=N2}" Width="130" ElementStyle="{StaticResource CellNumber}"/>
+                                    <DataGridTemplateColumn Width="100"><DataGridTemplateColumn.CellTemplate><DataTemplate>
+                                        <Button Command="{Binding DataContext.OpenOrderCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="{ui:T Action_View}" Style="{StaticResource GhostButton}"/>
+                                    </DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </TabItem>
+                        <TabItem Header="{ui:T SR_Returns}">
+                            <DataGrid Style="{StaticResource DataTable}" ItemsSource="{Binding Returns}" RowHeight="44" Margin="0,8,0,0" ColumnHeaderStyle="{StaticResource SupplierLtrHeader}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="{ui:T Col_Reference}" Binding="{Binding Number}" Width="140" ElementStyle="{StaticResource Ltr}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Date}" Binding="{Binding Date}" Width="130" ElementStyle="{StaticResource Ltr}"/>
+                                    <DataGridTextColumn Header="{ui:T Inv_Reason}" Binding="{Binding Reason}" Width="*" ElementStyle="{StaticResource CellText}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Total}" Binding="{Binding Total, StringFormat=N2}" Width="130" ElementStyle="{StaticResource CellNumber}"/>
+                                    <DataGridTextColumn Header="{ui:T Col_Status}" Binding="{Binding Status}" Width="180" ElementStyle="{StaticResource CellText}"/>
+                                    <DataGridTemplateColumn Width="100"><DataGridTemplateColumn.CellTemplate><DataTemplate>
+                                        <Button Command="{Binding DataContext.ReverseReturnCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="{ui:T Sup_Reverse}" Visibility="{Binding CanReverse, Converter={StaticResource BoolToVis}}" Style="{StaticResource GhostButton}"/>
+                                    </DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </TabItem>
+                    </TabControl>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,28 @@
+<UserControl x:Class="Dukkan.UI.Views.PaginationBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:Dukkan.UI">
+    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Padding="16,10" Background="{StaticResource SurfaceBrush}"
+            Visibility="{Binding TotalCount, Converter={StaticResource CountToVis}, ConverterParameter=NotEmpty}">
+        <Grid>
+            <TextBlock Text="{Binding ShowingText}" Style="{StaticResource Caption}" VerticalAlignment="Center" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding HasPages, Converter={StaticResource BoolToVis}}">
+                <Button Style="{StaticResource IconButtonSmall}" Width="32" Height="32" MinHeight="32" Command="{Binding PreviousCommand}" AutomationProperties.Name="Previous page">
+                    <ui:GlyphIcon Glyph="{Binding PrevGlyph, Source={x:Static ui:Localizer.Instance}}" FontSize="12"/>
+                </Button>
+                <ItemsControl ItemsSource="{Binding PageNumbers}" KeyboardNavigation.DirectionalNavigation="Contained">
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <RadioButton GroupName="pages" Style="{StaticResource PageRadio}" Content="{Binding Number}" IsChecked="{Binding IsCurrent, Mode=OneWay}"
+                                         Command="{Binding DataContext.GoToCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding Number}" FlowDirection="LeftToRight"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Style="{StaticResource IconButtonSmall}" Width="32" Height="32" MinHeight="32" Margin="4,0,0,0" Command="{Binding NextCommand}" AutomationProperties.Name="Next page">
+                    <ui:GlyphIcon Glyph="{Binding NextGlyph, Source={x:Static ui:Localizer.Instance}}" FontSize="12"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

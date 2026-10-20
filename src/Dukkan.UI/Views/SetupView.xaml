@@ -1,0 +1,153 @@
+<UserControl x:Class="Dukkan.UI.Views.SetupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:Dukkan.UI">
+    <Grid Background="{StaticResource BackgroundBrush}">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="34*"/><ColumnDefinition Width="66*"/></Grid.ColumnDefinitions>
+
+        <Border Background="{StaticResource NavyBrush}">
+            <StackPanel VerticalAlignment="Bottom" Margin="48,0,32,56">
+                <Image Source="/Dukkan;component/Assets/logo.png" Width="96" Height="96" HorizontalAlignment="Left" Margin="0,0,0,18" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <TextBlock Text="{ui:T Brand_Name}" FontSize="52" FontWeight="Bold" Foreground="White" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                <TextBlock Text="{ui:T Brand_Subtitle}" FontSize="22" FontWeight="Medium" Foreground="White" Margin="0,2,0,28"/>
+                <TextBlock Text="{ui:T Setup_Welcome}" FontSize="17" Foreground="#E6FFFFFF" TextWrapping="Wrap" TextTrimming="None"/>
+            </StackPanel>
+        </Border>
+
+        <Button Grid.Column="1" Style="{StaticResource SecondaryButton}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="20" MinHeight="34" Padding="12,0"
+                Command="{Binding ToggleLanguageCommand}" Panel.ZIndex="2">
+            <StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Globe}" Margin="0,0,8,0"/><TextBlock Text="{ui:T Lang_Toggle}" FontWeight="SemiBold"/></StackPanel>
+        </Button>
+
+        <!-- Step 1: shop, owner, tax, backup -->
+        <Grid Grid.Column="1" DataContext="{Binding Setup}" Visibility="{Binding IsFormStep, Converter={StaticResource BoolToVis}}">
+        <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Width="560" Margin="0,48,0,24" HorizontalAlignment="Center">
+                <TextBlock Text="{ui:T Setup_Title}" FontSize="28" FontWeight="Bold"/>
+                <TextBlock Text="{ui:T Setup_Sub}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="15" Margin="0,4,0,22" TextWrapping="Wrap" TextTrimming="None"/>
+
+                <Border Style="{StaticResource Card}" Padding="22,18" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="{ui:T Setup_Shop}" Style="{StaticResource H3}" Margin="0,0,0,12"/>
+                        <TextBlock Text="{ui:T Set_StoreName}" Style="{StaticResource FieldLabel}"/>
+                        <TextBox Text="{Binding StoreName, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Store name"/>
+                        <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[StoreName]}"/>
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <StackPanel><TextBlock Text="{ui:T Col_Phone}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding StorePhone, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" AutomationProperties.Name="Store phone"/></StackPanel>
+                            <StackPanel Grid.Column="2"><TextBlock Text="{ui:T Set_Address}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding StoreAddress, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Store address"/></StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Padding="22,18" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="{ui:T Setup_Owner}" Style="{StaticResource H3}" Margin="0,0,0,12"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="{ui:T Setup_OwnerName}" Style="{StaticResource FieldLabel}"/>
+                                <TextBox Text="{Binding OwnerName, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Owner name"/>
+                                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[OwnerName]}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="{ui:T Login_Username}" Style="{StaticResource FieldLabel}"/>
+                                <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" AutomationProperties.Name="Username"/>
+                                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Username]}"/>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="{ui:T Login_Password}" Style="{StaticResource FieldLabel}"/>
+                                <PasswordBox ui:Ui.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Lock}" ui:Ui.Placeholder="{ui:T Login_PasswordPh}" AutomationProperties.Name="Password"/>
+                                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Password]}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="{ui:T Setup_Confirm}" Style="{StaticResource FieldLabel}"/>
+                                <PasswordBox ui:Ui.Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Lock}" AutomationProperties.Name="Confirm password"/>
+                                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[ConfirmPassword]}"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Padding="22,18" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="{ui:T Setup_Business}" Style="{StaticResource H3}"/>
+                        <TextBlock Text="{ui:T Setup_BusinessNote}" Style="{StaticResource Caption}" Margin="0,2,0,12" TextWrapping="Wrap" TextTrimming="None"/>
+                        <WrapPanel>
+                            <RadioButton GroupName="biz" Style="{StaticResource ChipRadio}" Content="{ui:T Biz_general}" IsChecked="{Binding BusinessType, Converter={StaticResource EqualsConv}, ConverterParameter=general, Mode=TwoWay}"/>
+                            <RadioButton GroupName="biz" Style="{StaticResource ChipRadio}" Content="{ui:T Biz_clothing}" IsChecked="{Binding BusinessType, Converter={StaticResource EqualsConv}, ConverterParameter=clothing, Mode=TwoWay}"/>
+                            <RadioButton GroupName="biz" Style="{StaticResource ChipRadio}" Content="{ui:T Biz_grocery}" IsChecked="{Binding BusinessType, Converter={StaticResource EqualsConv}, ConverterParameter=grocery, Mode=TwoWay}"/>
+                            <RadioButton GroupName="biz" Style="{StaticResource ChipRadio}" Content="{ui:T Biz_pharmacy}" IsChecked="{Binding BusinessType, Converter={StaticResource EqualsConv}, ConverterParameter=pharmacy, Mode=TwoWay}"/>
+                            <RadioButton GroupName="biz" Style="{StaticResource ChipRadio}" Content="{ui:T Biz_electronics}" IsChecked="{Binding BusinessType, Converter={StaticResource EqualsConv}, ConverterParameter=electronics, Mode=TwoWay}"/>
+                            <RadioButton GroupName="biz" Style="{StaticResource ChipRadio}" Content="{ui:T Biz_beauty}" IsChecked="{Binding BusinessType, Converter={StaticResource EqualsConv}, ConverterParameter=beauty, Mode=TwoWay}"/>
+                            <RadioButton GroupName="biz" Style="{StaticResource ChipRadio}" Content="{ui:T Biz_home}" IsChecked="{Binding BusinessType, Converter={StaticResource EqualsConv}, ConverterParameter=home, Mode=TwoWay}"/>
+                            <RadioButton GroupName="biz" Style="{StaticResource ChipRadio}" Content="{ui:T Biz_toys}" IsChecked="{Binding BusinessType, Converter={StaticResource EqualsConv}, ConverterParameter=toys, Mode=TwoWay}"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Padding="22,18" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="{ui:T Setup_Tax}" Style="{StaticResource H3}"/>
+                        <TextBlock Text="{ui:T Setup_TaxNote}" Style="{StaticResource Caption}" Margin="0,2,0,12" TextWrapping="Wrap" TextTrimming="None"/>
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton GroupName="tax" Style="{StaticResource ChipRadio}" Content="{ui:T Setup_TaxIncluded}" IsChecked="{Binding TaxChoice, Converter={StaticResource EqualsConv}, ConverterParameter=Included, Mode=TwoWay}"/>
+                            <RadioButton GroupName="tax" Style="{StaticResource ChipRadio}" Content="{ui:T Setup_TaxExcluded}" IsChecked="{Binding TaxChoice, Converter={StaticResource EqualsConv}, ConverterParameter=Excluded, Mode=TwoWay}"/>
+                        </StackPanel>
+                        <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[TaxChoice]}"/>
+                        <TextBlock Text="{ui:T Setup_TaxRate}" Style="{StaticResource FieldLabel}" Margin="0,14,0,6"/>
+                        <TextBox Text="{Binding TaxPercent, UpdateSourceTrigger=PropertyChanged}" Width="120" HorizontalAlignment="Left" FlowDirection="LeftToRight" AutomationProperties.Name="Default tax rate"/>
+                        <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[TaxPercent]}"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Padding="22,18" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="{ui:T Setup_Backup}" Style="{StaticResource H3}"/>
+                        <TextBlock Text="{ui:T bk_secret_note}" Style="{StaticResource Caption}" Margin="0,2,0,12" TextWrapping="Wrap" TextTrimming="None"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <PasswordBox ui:Ui.Password="{Binding BackupSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Placeholder="{ui:T Setup_SecretPh}" AutomationProperties.Name="Recovery secret"/>
+                            <PasswordBox Grid.Column="2" ui:Ui.Password="{Binding BackupSecretConfirm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Placeholder="{ui:T Setup_SecretConfirmPh}" AutomationProperties.Name="Confirm recovery secret"/>
+                        </Grid>
+                        <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[BackupSecret]}"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+        <Border Grid.Row="1" Background="{StaticResource BackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Padding="0,14">
+            <StackPanel Width="560" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding Summary}" Style="{StaticResource ErrorText}" Margin="0,0,0,8" Visibility="{Binding HasSummary, Converter={StaticResource BoolToVis}}"/>
+                <Button Style="{StaticResource PrimaryButton}" Command="{Binding CreateCommand}" MinHeight="48" FontSize="15" Content="{ui:T Setup_Create}"/>
+            </StackPanel>
+        </Border>
+        </Grid>
+
+        <!-- Step 2: recovery codes -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" DataContext="{Binding Setup}" Visibility="{Binding IsCodesStep, Converter={StaticResource BoolToVis}}">
+            <StackPanel Width="520" Margin="0,64,0,48" HorizontalAlignment="Center">
+                <TextBlock Text="{ui:T Setup_CodesTitle}" FontSize="28" FontWeight="Bold"/>
+                <TextBlock Text="{ui:T Setup_CodesNote}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="15" Margin="0,6,0,20" TextWrapping="Wrap" TextTrimming="None"/>
+                <Border Style="{StaticResource Card}" Padding="24,18">
+                    <ItemsControl ItemsSource="{Binding Codes}">
+                        <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="2"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate><TextBlock Text="{Binding}" FontFamily="Consolas" FontSize="18" FontWeight="SemiBold" Margin="0,6" FlowDirection="LeftToRight"/></DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+                <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                    <Button Command="{Binding CopyCodesCommand}" MinHeight="44" Margin="0,0,10,0">
+                        <StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Document}" FontSize="14" Margin="0,0,8,0"/><TextBlock Text="{ui:T Action_Copy}"/></StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource PrimaryButton}" Command="{Binding ContinueCommand}" MinHeight="44" MinWidth="200" Content="{ui:T Setup_CodesSaved}"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

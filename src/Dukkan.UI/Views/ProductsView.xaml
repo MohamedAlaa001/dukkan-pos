@@ -1,0 +1,140 @@
+<UserControl x:Class="Dukkan.UI.Views.ProductsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:Dukkan.UI"
+             xmlns:v="clr-namespace:Dukkan.UI.Views">
+    <Grid Margin="24,12,24,24">
+        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+
+        <TextBlock Text="{ui:T Nav_Products}" Style="{StaticResource H1}" Margin="0,0,0,14"/>
+
+        <Grid Grid.Row="1" Margin="0,0,0,14">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*" MaxWidth="460"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Search}" ui:Ui.Placeholder="{ui:T Prod_SearchPh}" AutomationProperties.Name="Search products"/>
+            <ComboBox Grid.Column="1" ItemsSource="{Binding Categories}" SelectedItem="{Binding Category}" Width="170" Margin="12,0,0,0" AutomationProperties.Name="Category filter"/>
+            <ComboBox Grid.Column="2" ItemsSource="{Binding Statuses}" SelectedItem="{Binding Status}" Width="150" Margin="12,0,0,0" AutomationProperties.Name="Status filter"/>
+            <Button Grid.Column="3" Command="{Binding ImportCommand}" HorizontalAlignment="Right" MinWidth="130" Margin="0,0,10,0" Visibility="{Binding IsOwner, Converter={StaticResource BoolToVis}}">
+                <StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Download}" FontSize="14" Margin="0,0,8,0"/><TextBlock Text="{ui:T Imp_Button}"/></StackPanel>
+            </Button>
+            <Button Grid.Column="4" Style="{StaticResource PrimaryButton}" Command="{Binding AddCommand}" MinWidth="150" Visibility="{Binding IsOwner, Converter={StaticResource BoolToVis}}">
+                <StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Add}" FontSize="13" Margin="0,0,8,0"/><TextBlock Text="{ui:T Prod_Add}" FontWeight="SemiBold"/></StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- Bulk selection bar -->
+        <Border Grid.Row="2" Background="{StaticResource OrangeTintBrush}" CornerRadius="8" Padding="14,8" Margin="0,0,0,12" Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">
+            <Grid>
+                <TextBlock VerticalAlignment="Center" FontWeight="SemiBold">
+                    <Run Text="{Binding SelectedCount, Mode=OneWay}"/><Run Text=" "/><Run Text="{ui:T Prod_Selected}"/>
+                </TextBlock>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Command="{Binding LabelsCommand}" MinHeight="32" Margin="0,0,8,0" Visibility="{Binding IsOwner, Converter={StaticResource BoolToVis}}">
+                        <StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Print}" FontSize="13" Margin="0,0,6,0"/><TextBlock Text="{ui:T Label_Print}"/></StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource DangerOutlineButton}" Command="{Binding ArchiveSelectedCommand}" MinHeight="32" Margin="0,0,8,0" Content="{ui:T Action_Archive}" Visibility="{Binding IsOwner, Converter={StaticResource BoolToVis}}"/>
+                    <Button Command="{Binding ClearSelectionCommand}" MinHeight="32" Content="{ui:T Action_ClearSelection}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="3" Style="{StaticResource Card}" ClipToBounds="True">
+            <Grid>
+                <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                <DataGrid x:Name="Grid" Style="{StaticResource DataTable}" ItemsSource="{Binding Pager.Items}" RowHeight="56" AutomationProperties.Name="Products table">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="52" CanUserSort="False">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding DataContext.AllChecked, RelativeSource={RelativeSource AncestorType=DataGrid}, Mode=TwoWay}" IsThreeState="True" AutomationProperties.Name="Select all"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate><CheckBox IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Select row"/></DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="{ui:T Col_Image}" Width="84">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource ThumbTile}" Width="44" Height="44" Padding="6" HorizontalAlignment="Left">
+                                        <ui:GarmentThumb Kind="{Binding Kind}" Image="{Binding Image}" Foreground="{Binding ColorHex, Converter={StaticResource HexBrush}}"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="{ui:T Col_Name}" Binding="{Binding Name}" Width="*" MinWidth="170" ElementStyle="{StaticResource CellText}"/>
+                        <DataGridTextColumn Header="{ui:T Col_Category}" Binding="{Binding Category}" Width="130" ElementStyle="{StaticResource CellText}"/>
+                        <DataGridTextColumn Header="{ui:T Col_Variants}" Binding="{Binding VariantsText}" Width="110" ElementStyle="{StaticResource CellMuted}"/>
+                        <DataGridTextColumn Header="{ui:T Col_Price}" Binding="{Binding BasePrice, StringFormat=N0}" Width="100" ElementStyle="{StaticResource CellNumber}" HeaderStyle="{StaticResource GridHeaderRight}"/>
+                        <DataGridTemplateColumn Header="{ui:T Col_Stock}" Width="90" HeaderStyle="{StaticResource GridHeaderRight}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding TotalStock}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Medium" FlowDirection="LeftToRight">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                <Style.Triggers><DataTrigger Binding="{Binding StockIsCritical}" Value="True"><Setter Property="Foreground" Value="{StaticResource DangerBrush}"/></DataTrigger></Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="{ui:T Col_Status}" Width="140">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate><ui:Badge Kind="{Binding StatusKind}" VerticalAlignment="Center"><TextBlock Text="{Binding Status}"/></ui:Badge></DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="64">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid HorizontalAlignment="Center" Visibility="{Binding DataContext.IsOwner, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource BoolToVis}}">
+                                        <ToggleButton x:Name="MenuToggle" Width="34" Height="34" Cursor="Hand" AutomationProperties.Name="Row actions" Foreground="{StaticResource TextSecondaryBrush}">
+                                            <ToggleButton.Template>
+                                                <ControlTemplate TargetType="ToggleButton">
+                                                    <Grid>
+                                                        <Border x:Name="Ring" CornerRadius="8" BorderThickness="2" BorderBrush="{StaticResource FocusRingBrush}" Visibility="Collapsed"/>
+                                                        <Border x:Name="Bd" CornerRadius="8" Background="Transparent">
+                                                            <ui:GlyphIcon Glyph="{x:Static ui:Icons.More}" FontSize="16" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </Grid>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Background" Value="{StaticResource BackgroundBrush}"/></Trigger>
+                                                        <Trigger Property="IsChecked" Value="True"><Setter TargetName="Bd" Property="Background" Value="{StaticResource BackgroundBrush}"/></Trigger>
+                                                        <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Ring" Property="Visibility" Value="Visible"/></Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </ToggleButton.Template>
+                                        </ToggleButton>
+                                        <Popup IsOpen="{Binding IsChecked, ElementName=MenuToggle, Mode=TwoWay}" PlacementTarget="{Binding ElementName=MenuToggle}" Placement="Bottom" StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
+                                            <Border Style="{StaticResource Card}" Margin="8,4,12,16" Padding="6" MinWidth="190" TextElement.FontFamily="{StaticResource UiFont}" TextElement.FontSize="13" FlowDirection="{Binding Source={x:Static ui:Localizer.Instance}, Path=FlowDirection}">
+                                                <StackPanel>
+                                                    <Button Style="{StaticResource GhostButton}" HorizontalContentAlignment="Left" Foreground="{StaticResource TextPrimaryBrush}" Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Click="CloseMenu">
+                                                        <StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Edit}" FontSize="14" Margin="0,0,10,0"/><TextBlock Text="{ui:T Action_Edit}"/></StackPanel>
+                                                    </Button>
+                                                    <Button Style="{StaticResource GhostButton}" HorizontalContentAlignment="Left" Foreground="{StaticResource TextPrimaryBrush}" Command="{Binding DataContext.LabelsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Click="CloseMenu">
+                                                        <StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Print}" FontSize="14" Margin="0,0,10,0"/><TextBlock Text="{ui:T Label_Print}"/></StackPanel>
+                                                    </Button>
+                                                    <Button Style="{StaticResource GhostButton}" HorizontalContentAlignment="Left" Foreground="{StaticResource TextPrimaryBrush}" Command="{Binding DataContext.DuplicateCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Click="CloseMenu">
+                                                        <StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Document}" FontSize="14" Margin="0,0,10,0"/><TextBlock Text="{ui:T Action_Duplicate}"/></StackPanel>
+                                                    </Button>
+                                                    <Button Style="{StaticResource GhostButton}" HorizontalContentAlignment="Left" Foreground="{StaticResource DangerBrush}" Command="{Binding DataContext.ArchiveCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Click="CloseMenu">
+                                                        <StackPanel Orientation="Horizontal"><ui:GlyphIcon Glyph="{x:Static ui:Icons.Delete}" FontSize="14" Margin="0,0,10,0"/><TextBlock Text="{ui:T Action_Archive}"/></StackPanel>
+                                                    </Button>
+                                                </StackPanel>
+                                            </Border>
+                                        </Popup>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <ui:EmptyState Glyph="{x:Static ui:Icons.Search}" Title="{ui:T Empty_NoProducts}" Message="{ui:T Empty_NoProductsMsg}" Visibility="{Binding Pager.TotalCount, Converter={StaticResource CountToVis}}">
+                    <Button Content="{ui:T Action_ClearFilters}" Command="{Binding ClearFiltersCommand}" MinHeight="36"/>
+                </ui:EmptyState>
+
+                <v:PaginationBar Grid.Row="1" DataContext="{Binding Pager}"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

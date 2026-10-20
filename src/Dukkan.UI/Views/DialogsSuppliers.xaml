@@ -1,0 +1,326 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="clr-namespace:Dukkan.UI">
+
+    <!-- ===== Reason prompt (reversals) ===== -->
+    <DataTemplate DataType="{x:Type ui:ReasonViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <StackPanel>
+                <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{Binding Title}"/>
+                <TextBlock Text="{Binding Subject}" FontWeight="SemiBold" Margin="0,0,0,6" TextWrapping="Wrap" TextTrimming="None"/>
+                <TextBlock Text="{ui:T Sup_ReasonNote}" Style="{StaticResource Caption}" TextWrapping="Wrap" TextTrimming="None" Margin="0,0,0,12"/>
+                <TextBlock Text="{ui:T Inv_Reason}" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding Reason, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Reason"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Reason]}"/>
+                <Grid Margin="0,22,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="42"/>
+                    <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="{ui:T Sup_Reverse}" Command="{Binding ConfirmCommand}" MinHeight="42" IsDefault="True"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ===== Supplier add / edit ===== -->
+    <DataTemplate DataType="{x:Type ui:SupplierEditViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <StackPanel>
+                <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{Binding Title}"/>
+                <TextBlock Text="{ui:T Col_Name}" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Supplier name"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Name]}"/>
+                <TextBlock Text="{ui:T Col_Phone}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                <TextBox Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" AutomationProperties.Name="Phone"/>
+                <TextBlock Text="{ui:T Col_AddressOptional}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                <TextBox Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Address"/>
+                <TextBlock Text="{ui:T Col_Notes}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" MinHeight="70" TextWrapping="Wrap" VerticalContentAlignment="Top" AutomationProperties.Name="Notes"/>
+                <Grid Margin="0,22,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="42"/>
+                    <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="{ui:T Action_Save}" Command="{Binding SaveCommand}" MinHeight="42" IsDefault="True"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ===== Supplier opening balance ===== -->
+    <DataTemplate DataType="{x:Type ui:SupplierOpeningViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <StackPanel>
+                <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{ui:T Sup_Opening}"/>
+                <TextBlock Text="{Binding SupplierName}" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                <TextBlock Text="{ui:T Sup_OpeningNote}" Style="{StaticResource Caption}" TextWrapping="Wrap" TextTrimming="None" Margin="0,0,0,12"/>
+                <TextBlock Text="{ui:T Col_Amount}" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource AmountTextBox}" AutomationProperties.Name="Opening amount"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Amount]}"/>
+                <TextBlock Text="{ui:T Credit_DueDateOptional}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                <TextBox Text="{Binding DueDate, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ui:Ui.Placeholder="yyyy-MM-dd" AutomationProperties.Name="Due date"/>
+                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[DueDate]}"/>
+                <TextBlock Text="{ui:T Col_Notes}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                <TextBox Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Note"/>
+                <Grid Margin="0,22,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="42"/>
+                    <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="{ui:T Action_Save}" Command="{Binding SaveCommand}" MinHeight="42" IsDefault="True"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <!-- ===== Purchase invoice ===== -->
+    <DataTemplate DataType="{x:Type ui:PurchaseInvoiceViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <Grid MaxHeight="690">
+                <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{Binding Title}"/>
+                        <TextBlock Text="{ui:T PO_NoPosting}" Style="{StaticResource Caption}" TextWrapping="Wrap" Visibility="{Binding IsInvoice, Converter={StaticResource InvBoolToVis}}" Margin="0,0,0,12"/>
+                        <TextBlock Text="{Binding SupplierName}" FontWeight="SemiBold" FontSize="15" Margin="0,-6,0,12"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <StackPanel Visibility="{Binding IsInvoice, Converter={StaticResource BoolToVis}}">
+                                <TextBlock Text="{ui:T Sup_Ref}" Style="{StaticResource FieldLabel}"/>
+                                <TextBox Text="{Binding SupplierRef, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" AutomationProperties.Name="Supplier invoice reference"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Visibility="{Binding IsInvoice, Converter={StaticResource BoolToVis}}">
+                                <TextBlock Text="{ui:T Sup_InvoiceDate}" Style="{StaticResource FieldLabel}"/>
+                                <TextBox Text="{Binding InvoiceDate, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" AutomationProperties.Name="Invoice date"/>
+                                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[InvoiceDate]}"/>
+                            </StackPanel>
+                            <StackPanel>
+                                <StackPanel.Style><Style TargetType="StackPanel"><Setter Property="Grid.Column" Value="4"/><Style.Triggers><DataTrigger Binding="{Binding IsInvoice}" Value="False"><Setter Property="Grid.Column" Value="0"/><Setter Property="Grid.ColumnSpan" Value="5"/></DataTrigger></Style.Triggers></Style></StackPanel.Style>
+                                <TextBlock Text="{ui:T PO_Expected}" Style="{StaticResource FieldLabel}" Visibility="{Binding IsInvoice, Converter={StaticResource InvBoolToVis}}"/>
+                                <TextBlock Text="{ui:T Credit_DueDateOptional}" Style="{StaticResource FieldLabel}" Visibility="{Binding IsInvoice, Converter={StaticResource BoolToVis}}"/>
+                                <TextBox Text="{Binding DueDate, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ui:Ui.Placeholder="yyyy-MM-dd" AutomationProperties.Name="Due date"/>
+                                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[DueDate]}"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="{Binding LinePrompt}" Style="{StaticResource FieldLabel}" Margin="0,14,0,6" Visibility="{Binding CanAddItems, Converter={StaticResource BoolToVis}}"/>
+                        <TextBox Text="{Binding Query, UpdateSourceTrigger=PropertyChanged}" ui:Ui.Icon="{x:Static ui:Icons.Search}" ui:Ui.Placeholder="{ui:T Inv_FindPh}" AutomationProperties.Name="Find item" Visibility="{Binding CanAddItems, Converter={StaticResource BoolToVis}}"/>
+                        <ItemsControl ItemsSource="{Binding Results}" Margin="0,6,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource GhostButton}" HorizontalContentAlignment="Stretch" Foreground="{StaticResource TextPrimaryBrush}" MinHeight="38"
+                                            Command="{Binding DataContext.PickCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}">
+                                        <Grid>
+                                            <TextBlock Text="{Binding FullName}" HorizontalAlignment="Left"/>
+                                            <TextBlock Text="{Binding Stock}" FontWeight="SemiBold" HorizontalAlignment="Right" FlowDirection="LeftToRight"/>
+                                        </Grid>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Lines -->
+                        <Grid Margin="0,14,0,4">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="80"/><ColumnDefinition Width="100"/><ColumnDefinition Width="100"/><ColumnDefinition Width="36"/></Grid.ColumnDefinitions>
+                            <TextBlock Text="{ui:T Col_Product}" Style="{StaticResource Caption}"/>
+                            <TextBlock Grid.Column="1" Text="{ui:T Col_Qty}" Style="{StaticResource Caption}"/>
+                            <TextBlock Grid.Column="2" Text="{ui:T Field_CostPrice}" Style="{StaticResource Caption}"/>
+                            <TextBlock Grid.Column="3" Text="{ui:T Col_Total}" Style="{StaticResource Caption}" TextAlignment="Right" FlowDirection="LeftToRight"/>
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding Lines}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,6">
+                                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="80"/><ColumnDefinition Width="100"/><ColumnDefinition Width="100"/><ColumnDefinition Width="36"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Variant.FullName}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
+                                        <TextBox Grid.Column="1" Text="{Binding QtyText, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" MinHeight="36" Margin="0,0,6,0" AutomationProperties.Name="Quantity"/>
+                                        <TextBox Grid.Column="2" Text="{Binding CostText, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" MinHeight="36" Margin="0,0,6,0" AutomationProperties.Name="Unit cost"/>
+                                        <TextBlock Grid.Column="3" Text="{Binding Total, StringFormat=N2}" FlowDirection="LeftToRight" TextAlignment="Right" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                        <Button Grid.Column="4" Style="{StaticResource IconButtonDanger}" Command="{Binding DataContext.RemoveCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" Width="30" Height="30" MinHeight="30" AutomationProperties.Name="Remove line">
+                                            <ui:GlyphIcon Glyph="{x:Static ui:Icons.Delete}" FontSize="14"/>
+                                        </Button>
+                                        <StackPanel Grid.Row="1" Grid.ColumnSpan="5" Visibility="{Binding ShowStockFields,Converter={StaticResource BoolToVis}}" Margin="0,6,0,10">
+                                            <TextBlock Text="{ui:T Stock_ReceiptMetadata}" Style="{StaticResource Caption}" Margin="0,0,0,4"/>
+                                            <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                                <ComboBox ItemsSource="{Binding Locations}" SelectedValuePath="Id" SelectedValue="{Binding LocationId}"/>
+                                                <TextBox Grid.Column="2" Text="{Binding Batch,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ui:Ui.Placeholder="{ui:T Stock_Batch}" IsEnabled="{Binding TrackExpiry}"/>
+                                                <TextBox Grid.Column="4" Text="{Binding Expiry,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ui:Ui.Placeholder="yyyy-MM-dd" IsEnabled="{Binding TrackExpiry}"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Totals and payment -->
+                        <Border Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16,12" Margin="0,12,0,0">
+                            <Grid>
+                                <Grid.RowDefinitions><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <TextBlock Text="{ui:T Pay_TotalAmount}" FontWeight="SemiBold"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Total, Converter={StaticResource MoneyConv}}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource OrangeBrush}" FlowDirection="LeftToRight"/>
+                                <TextBlock Grid.Row="1" Text="{ui:T Col_Remaining}" Margin="0,6,0,0" Visibility="{Binding IsInvoice, Converter={StaticResource BoolToVis}}"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Remaining, Converter={StaticResource MoneyConv}}" FontWeight="SemiBold" Margin="0,6,0,0" FlowDirection="LeftToRight" Visibility="{Binding IsInvoice, Converter={StaticResource BoolToVis}}"/>
+                            </Grid>
+                        </Border>
+                        <TextBlock Text="{ui:T SR_CreditApplied}" Margin="0,8,0,0" Visibility="{Binding IsInvoice, Converter={StaticResource BoolToVis}}"/>
+                        <TextBlock Text="{Binding CreditApplied, Converter={StaticResource MoneyConv}}" FlowDirection="LeftToRight" Visibility="{Binding IsInvoice, Converter={StaticResource BoolToVis}}"/>
+                        <CheckBox Content="{ui:T PO_OverReceipt}" IsChecked="{Binding ConfirmOverReceipt}" Visibility="{Binding IsOrderReceipt, Converter={StaticResource BoolToVis}}" Margin="0,12,0,0"/>
+                        <Grid Margin="0,12,0,0" Visibility="{Binding IsInvoice, Converter={StaticResource BoolToVis}}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="{ui:T Sup_PaidNow}" Style="{StaticResource FieldLabel}"/>
+                                <TextBox Text="{Binding Paid, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" AutomationProperties.Name="Paid now"/>
+                                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Paid]}"/>
+                                <Button Command="{Binding PayAllCommand}" Content="{ui:T Sup_PayAll}" HorizontalAlignment="Left" MinHeight="30" Padding="10,0" Margin="-10,6,0,0" Style="{StaticResource GhostButton}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="{ui:T Pay_Method}" Style="{StaticResource FieldLabel}"/>
+                                <ComboBox ItemsSource="{Binding Methods}" SelectedItem="{Binding Method}" AutomationProperties.Name="Payment method"/>
+                                <TextBlock Text="{ui:T Sup_CashNeedsShift}" Style="{StaticResource Caption}" TextWrapping="Wrap" TextTrimming="None" Margin="0,6,0,0" Visibility="{Binding HasShift, Converter={StaticResource InvBoolToVis}}"/>
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Text="{ui:T Col_Reference}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6" Visibility="{Binding IsInvoice, Converter={StaticResource BoolToVis}}"/>
+                        <TextBox Text="{Binding PaymentReference, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" AutomationProperties.Name="Payment reference" Visibility="{Binding IsInvoice, Converter={StaticResource BoolToVis}}"/>
+                        <ContentControl Content="{Binding Card}" ContentTemplate="{StaticResource ManualCardEntryTemplate}" Visibility="{Binding IsCard,Converter={StaticResource BoolToVis}}" Margin="0,10,0,0"/>
+                        <TextBlock Text="{ui:T Col_Notes}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                        <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Notes"/>
+                    </StackPanel>
+                </ScrollViewer>
+                <StackPanel Grid.Row="1" Margin="0,4,0,0">
+                    <Border Background="{StaticResource DangerTintBrush}" CornerRadius="8" Padding="14,10" Margin="0,10,0,0" Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource DangerTextBrush}" FontWeight="Medium" TextWrapping="Wrap" TextTrimming="None"/>
+                    </Border>
+                    <Grid Margin="0,14,0,0">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="2*"/></Grid.ColumnDefinitions>
+                        <Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="44"/>
+                        <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="{Binding SaveText}" Command="{Binding SaveCommand}" MinHeight="44"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+    <!-- ===== Pay supplier ===== -->
+    <DataTemplate DataType="{x:Type ui:SupplierPayViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <Grid MaxHeight="690">
+                <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{ui:T Sup_PayNow}"/>
+                        <Border Background="{StaticResource SurfaceSubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="16,12" Margin="0,0,0,14">
+                            <Grid>
+                                <TextBlock Text="{Binding SupplierName}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                <StackPanel HorizontalAlignment="Right">
+                                    <TextBlock Text="{ui:T Sup_Owed}" Style="{StaticResource Caption}" HorizontalAlignment="Right"/>
+                                    <TextBlock Text="{Binding Owed, Converter={StaticResource MoneyConv}}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource OrangeBrush}" FlowDirection="LeftToRight"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="{ui:T Col_Amount}" Style="{StaticResource FieldLabel}"/>
+                                <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource AmountTextBox}" AutomationProperties.Name="Payment amount"/>
+                                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Amount]}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="{ui:T Sup_PayDate}" Style="{StaticResource FieldLabel}"/>
+                                <TextBox Text="{Binding PayDate, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" MinHeight="44" AutomationProperties.Name="Payment date"/>
+                                <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[PayDate]}"/>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="{ui:T Pay_Method}" Style="{StaticResource FieldLabel}"/>
+                                <ComboBox ItemsSource="{Binding Methods}" SelectedItem="{Binding Method}" AutomationProperties.Name="Payment method"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="{ui:T Col_Reference}" Style="{StaticResource FieldLabel}"/>
+                                <TextBox Text="{Binding Reference, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" AutomationProperties.Name="Reference"/>
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Text="{ui:T Sup_CashNeedsShift}" Style="{StaticResource Caption}" TextWrapping="Wrap" TextTrimming="None" Margin="0,6,0,0" Visibility="{Binding HasShift, Converter={StaticResource InvBoolToVis}}"/>
+                        <ContentControl Content="{Binding Card}" ContentTemplate="{StaticResource ManualCardEntryTemplate}" Visibility="{Binding IsCard,Converter={StaticResource BoolToVis}}" Margin="0,10,0,0"/>
+
+                        <TextBlock Text="{ui:T Sup_Allocate}" Style="{StaticResource FieldLabel}" Margin="0,16,0,6"/>
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="110"/><ColumnDefinition Width="100"/><ColumnDefinition Width="110"/></Grid.ColumnDefinitions>
+                            <TextBlock Text="{ui:T Col_Invoice}" Style="{StaticResource Caption}"/>
+                            <TextBlock Grid.Column="1" Text="{ui:T Col_DueDate}" Style="{StaticResource Caption}" Margin="6,0"/>
+                            <TextBlock Grid.Column="2" Text="{ui:T Col_Remaining}" Style="{StaticResource Caption}" TextAlignment="Right" Margin="6,0" FlowDirection="LeftToRight"/>
+                            <TextBlock Grid.Column="3" Text="{ui:T Sup_Apply}" Style="{StaticResource Caption}" Margin="10,0,0,0"/>
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding Rows}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,6">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="110"/><ColumnDefinition Width="100"/><ColumnDefinition Width="110"/></Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Number}" FlowDirection="LeftToRight"/>
+                                            <ui:Badge Kind="Danger" Margin="8,0,0,0" Visibility="{Binding Overdue, Converter={StaticResource BoolToVis}}"><TextBlock Text="{ui:T Sup_Overdue}"/></ui:Badge>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="1" Text="{Binding Due}" FlowDirection="LeftToRight" VerticalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}" Margin="6,0"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding Outstanding, StringFormat=N2}" FlowDirection="LeftToRight" TextAlignment="Right" VerticalAlignment="Center" Margin="6,0"/>
+                                        <TextBox Grid.Column="3" Text="{Binding AmountText, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" MinHeight="36" Margin="10,0,0,0" AutomationProperties.Name="Amount applied to invoice"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Grid Margin="0,4,0,0">
+                            <TextBlock Text="{ui:T Sup_Applied}" FontWeight="SemiBold"/>
+                            <TextBlock HorizontalAlignment="Right" Text="{Binding AllocatedTotal, Converter={StaticResource MoneyConv}}" FontWeight="SemiBold" FlowDirection="LeftToRight"/>
+                        </Grid>
+                        <TextBlock Text="{ui:T Col_Notes}" Style="{StaticResource FieldLabel}" Margin="0,12,0,6"/>
+                        <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Notes"/>
+                    </StackPanel>
+                </ScrollViewer>
+                <StackPanel Grid.Row="1" Margin="0,4,0,0">
+                    <Border Background="{StaticResource DangerTintBrush}" CornerRadius="8" Padding="14,10" Margin="0,10,0,0" Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource DangerTextBrush}" FontWeight="Medium" TextWrapping="Wrap" TextTrimming="None"/>
+                    </Border>
+                    <Grid Margin="0,14,0,0">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="2*"/></Grid.ColumnDefinitions>
+                        <Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="44"/>
+                        <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="{ui:T Sup_PostPayment}" Command="{Binding SaveCommand}" MinHeight="44"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+    <!-- ===== Purchase invoice details ===== -->
+    <DataTemplate DataType="{x:Type ui:SupplierInvoiceViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <StackPanel>
+                <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{Binding Invoice.Number}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,-6,0,12">
+                    <ui:Badge Kind="{Binding Invoice.StatusKind}"><TextBlock Text="{Binding Invoice.Status}"/></ui:Badge>
+                    <ui:Badge Kind="Danger" Margin="6,0,0,0" Visibility="{Binding Invoice.Overdue, Converter={StaticResource BoolToVis}}"><TextBlock Text="{ui:T Sup_Overdue}"/></ui:Badge>
+                    <TextBlock Text="{Binding Invoice.Reference}" Margin="12,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}"/>
+                </StackPanel>
+                <ItemsControl ItemsSource="{Binding Lines}" Visibility="{Binding HasLines, Converter={StaticResource BoolToVis}}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="60"/><ColumnDefinition Width="90"/><ColumnDefinition Width="100"/></Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap" TextTrimming="None"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Quantity}" FlowDirection="LeftToRight" TextAlignment="Right"/>
+                                <TextBlock Grid.Column="2" Text="{Binding UnitCost, StringFormat=N2}" FlowDirection="LeftToRight" TextAlignment="Right"/>
+                                <TextBlock Grid.Column="3" Text="{Binding Total, StringFormat=N2}" FlowDirection="LeftToRight" TextAlignment="Right" FontWeight="SemiBold"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Border Background="{StaticResource SurfaceSubtleBrush}" CornerRadius="8" Padding="14,10" Margin="0,8,0,0">
+                    <Grid>
+                        <Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <TextBlock Text="{ui:T Col_Total}"/><TextBlock Grid.Column="1" Text="{Binding Invoice.Total, Converter={StaticResource MoneyConv}}" FlowDirection="LeftToRight" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="1" Text="{ui:T SR_Settled}" Margin="0,4,0,0"/><TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Invoice.Paid, Converter={StaticResource MoneyConv}}" FlowDirection="LeftToRight" Margin="0,4,0,0"/>
+                        <TextBlock Grid.Row="2" Text="{ui:T Col_Remaining}" Margin="0,4,0,0" FontWeight="SemiBold"/><TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Invoice.Outstanding, Converter={StaticResource MoneyConv}}" FlowDirection="LeftToRight" FontWeight="Bold" Margin="0,4,0,0" Foreground="{StaticResource OrangeBrush}"/>
+                    </Grid>
+                </Border>
+                <Button Content="{ui:T Action_Close}" Command="{Binding CloseCommand}" MinHeight="42" Margin="0,18,0,0"/>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+</ResourceDictionary>

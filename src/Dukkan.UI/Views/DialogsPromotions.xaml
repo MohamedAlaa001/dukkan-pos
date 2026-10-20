@@ -1,0 +1,57 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ui="clr-namespace:Dukkan.UI">
+ <DataTemplate DataType="{x:Type ui:PromotionEditViewModel}">
+  <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+   <Grid MaxHeight="640"><Grid.RowDefinitions><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+    <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="0,0,12,0">
+     <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{ui:T Promo_Edit}"/>
+     <UniformGrid Columns="2">
+      <StackPanel Margin="0,0,12,12"><TextBlock Text="{ui:T Pay_NameEn}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding NameEn,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/></StackPanel>
+      <StackPanel Margin="0,0,12,12"><TextBlock Text="{ui:T Pay_NameAr}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding NameAr,UpdateSourceTrigger=PropertyChanged}" FlowDirection="RightToLeft"/></StackPanel>
+      <StackPanel Margin="0,0,12,12"><TextBlock Text="{ui:T Promo_Type}" Style="{StaticResource FieldLabel}"/><ComboBox ItemsSource="{Binding Kinds}" SelectedItem="{Binding Kind}"/></StackPanel>
+      <StackPanel Margin="0,0,12,12"><TextBlock Text="{ui:T Promo_Priority}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding Priority,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/></StackPanel>
+     </UniformGrid>
+     <WrapPanel Margin="0,0,0,16"><CheckBox Content="{ui:T Promo_Enabled}" IsChecked="{Binding Enabled}" Margin="0,0,24,0"/><CheckBox Content="{ui:T Promo_Stackable}" IsChecked="{Binding Stackable}"/></WrapPanel>
+     <UniformGrid Columns="2">
+      <StackPanel Margin="0,0,12,12" Visibility="{Binding HasPercent,Converter={StaticResource BoolToVis}}"><TextBlock Text="{ui:T Promo_Percent}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding Percent,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/></StackPanel>
+      <StackPanel Margin="0,0,12,12" Visibility="{Binding HasAmount,Converter={StaticResource BoolToVis}}"><TextBlock Text="{ui:T Promo_Amount}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding Amount,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/></StackPanel>
+      <StackPanel Margin="0,0,12,12" Visibility="{Binding HasMinimum,Converter={StaticResource BoolToVis}}"><TextBlock Text="{ui:T Promo_Minimum}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding Minimum,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/></StackPanel>
+     </UniformGrid>
+     <StackPanel Visibility="{Binding IsBuyGet,Converter={StaticResource BoolToVis}}" Margin="0,0,0,14">
+      <UniformGrid Columns="2"><StackPanel Margin="0,0,12,0"><TextBlock Text="{ui:T Promo_Buy}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding Buy,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/></StackPanel><StackPanel Margin="0,0,12,0"><TextBlock Text="{ui:T Promo_Get}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding Get,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/></StackPanel></UniformGrid>
+      <CheckBox Content="{ui:T Promo_SameProduct}" IsChecked="{Binding SameProduct}" Margin="0,10,0,0"/>
+     </StackPanel>
+     <UniformGrid Columns="2">
+      <StackPanel Margin="0,0,12,12"><TextBlock Text="{ui:T Promo_Coupon}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding Coupon,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/></StackPanel>
+      <StackPanel Margin="0,0,12,12"><TextBlock Text="{ui:T Promo_Group}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding Group,UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
+      <StackPanel Margin="0,0,12,12"><TextBlock Text="{ui:T Promo_Starts}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding Starts,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/></StackPanel>
+      <StackPanel Margin="0,0,12,12"><TextBlock Text="{ui:T Promo_Ends}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding Ends,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/></StackPanel>
+      <StackPanel Margin="0,0,12,12"><TextBlock Text="{ui:T Promo_StartTime}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding StartTime,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/></StackPanel>
+      <StackPanel Margin="0,0,12,12"><TextBlock Text="{ui:T Promo_EndTime}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding EndTime,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/></StackPanel>
+     </UniformGrid>
+     <ItemsControl ItemsSource="{Binding Days}" Margin="0,0,0,10"><ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel><ItemsControl.ItemTemplate><DataTemplate><CheckBox Content="{Binding Name}" IsChecked="{Binding Selected}" Margin="0,0,16,8"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+     <TextBlock Text="{ui:T Promo_WindowHint}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,0,0,14"/>
+     <TextBlock Text="{ui:T Promo_Category}" Style="{StaticResource FieldLabel}"/><ComboBox ItemsSource="{Binding Categories}" IsEditable="True" Text="{Binding Category,UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,14"/>
+     <TextBlock Text="{ui:T Promo_Products}" Style="{StaticResource H3}" Margin="0,10,0,8"/>
+     <TextBlock Text="{ui:T Promo_ScopeHint}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,0,0,10"/>
+     <TextBox Text="{Binding Search,UpdateSourceTrigger=PropertyChanged}" ui:Ui.Placeholder="{ui:T Promo_Search}" Margin="0,0,0,10"/>
+     <DataGrid ItemsSource="{Binding VisibleProducts}" Style="{StaticResource DataTable}" Height="200" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="False" RowHeight="38"><DataGrid.Columns>
+      <DataGridCheckBoxColumn Header="{ui:T Promo_Choose}" Binding="{Binding Selected,UpdateSourceTrigger=PropertyChanged}" Width="85"/>
+      <DataGridTextColumn Header="{ui:T Promo_Name}" Binding="{Binding Name}" IsReadOnly="True" Width="*"/>
+      <DataGridTextColumn Header="{ui:T Promo_BundleQty}" Binding="{Binding Quantity,UpdateSourceTrigger=PropertyChanged}" Width="140"/>
+     </DataGrid.Columns></DataGrid>
+    </StackPanel></ScrollViewer>
+    <StackPanel Grid.Row="1" Margin="0,12,0,0"><TextBlock Text="{Binding Error}" Style="{StaticResource ErrorText}" TextWrapping="Wrap"/><Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="12"/><ColumnDefinition/></Grid.ColumnDefinitions><Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="44"/><Button Grid.Column="2" Content="{ui:T Action_Save}" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" MinHeight="44"/></Grid></StackPanel>
+   </Grid>
+  </Border>
+ </DataTemplate>
+ <DataTemplate DataType="{x:Type ui:LoyaltyAdjustViewModel}">
+  <Border Style="{StaticResource DialogCard}" Width="{Binding Width}"><StackPanel>
+   <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{ui:T Loyalty_Adjust}"/>
+   <TextBlock Text="{ui:T Loyalty_AdjustHint}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,0,0,16"/>
+   <TextBlock Text="{ui:T Loyalty_Points}" Style="{StaticResource FieldLabel}"/><TextBox Text="{Binding Points,UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"/>
+   <TextBlock Text="{ui:T Shift_Reason}" Style="{StaticResource FieldLabel}" Margin="0,14,0,6"/><TextBox Text="{Binding Reason,UpdateSourceTrigger=PropertyChanged}"/>
+   <TextBlock Text="{Binding Error}" Style="{StaticResource ErrorText}" TextWrapping="Wrap"/>
+   <Grid Margin="0,18,0,0"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="12"/><ColumnDefinition/></Grid.ColumnDefinitions><Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="44"/><Button Grid.Column="2" Content="{ui:T Action_Save}" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" MinHeight="44"/></Grid>
+  </StackPanel></Border>
+ </DataTemplate>
+</ResourceDictionary>

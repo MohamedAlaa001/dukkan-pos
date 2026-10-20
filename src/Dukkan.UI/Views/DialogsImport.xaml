@@ -1,0 +1,56 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="clr-namespace:Dukkan.UI">
+    <DataTemplate DataType="{x:Type ui:ImportViewModel}">
+        <Border Style="{StaticResource DialogCard}" Width="{Binding Width}">
+            <Grid MaxHeight="690">
+                <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <ContentPresenter ContentTemplate="{StaticResource DialogHeaderTemplate}" Content="{ui:T Imp_Title}"/>
+                        <TextBlock Text="{ui:T Imp_Note}" Style="{StaticResource Caption}" TextWrapping="Wrap" TextTrimming="None" Margin="0,-6,0,12"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <RadioButton GroupName="impkind" Style="{StaticResource ChipRadio}" Content="{ui:T Imp_KindProducts}" IsChecked="{Binding ProductsMode, Mode=TwoWay}"/>
+                            <RadioButton GroupName="impkind" Style="{StaticResource ChipRadio}" Content="{ui:T Imp_KindCustomers}" IsChecked="{Binding CustomersMode, Mode=TwoWay}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Command="{Binding TemplateCommand}" Content="{ui:T Imp_Template}" MinHeight="40" Margin="0,0,10,0"/>
+                            <Button Command="{Binding ChooseCommand}" Content="{ui:T Imp_Choose}" MinHeight="40" Style="{StaticResource PrimaryButton}"/>
+                            <TextBlock Text="{Binding FileName}" VerticalAlignment="Center" Margin="12,0,0,0" FlowDirection="LeftToRight"/>
+                        </StackPanel>
+                        <TextBlock Text="{ui:T Imp_SpreadsheetTip}" Style="{StaticResource Caption}" TextWrapping="Wrap" TextTrimming="None" Margin="0,8,0,0"/>
+                        <Border Background="{StaticResource SurfaceSubtleBrush}" CornerRadius="8" Padding="14,10" Margin="0,12,0,0" Visibility="{Binding HasMessage, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="{Binding Message}" TextWrapping="Wrap" TextTrimming="None"/>
+                        </Border>
+                        <TextBlock Text="{Binding Summary}" FontWeight="SemiBold" Margin="0,12,0,0" TextWrapping="Wrap" TextTrimming="None"/>
+                        <Border Style="{StaticResource FlatCard}" Margin="0,8,0,0" Visibility="{Binding HasErrors2, Converter={StaticResource BoolToVis}}">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="220">
+                                <ItemsControl ItemsSource="{Binding Errors}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="12,6">
+                                                <Grid.ColumnDefinitions><ColumnDefinition Width="60"/><ColumnDefinition Width="110"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Row}" Foreground="{StaticResource DangerBrush}" FontWeight="SemiBold" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding Column}" FlowDirection="LeftToRight" HorizontalAlignment="Left" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                                <TextBlock Grid.Column="2" Text="{Binding Message}" TextWrapping="Wrap" TextTrimming="None"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Border>
+                        <TextBlock Text="{ui:T Imp_Reference}" Style="{StaticResource FieldLabel}" Margin="0,14,0,6"/>
+                        <TextBox Text="{Binding Reference, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ui:Ui.Placeholder="MIG-2026-001" AutomationProperties.Name="Migration reference"/>
+                        <TextBlock Style="{StaticResource ErrorText}" Text="{Binding Errs[Reference]}"/>
+                        <Button Command="{Binding CloseOnboardingCommand}" Content="{ui:T Imp_CloseOnboarding}" HorizontalAlignment="Left" MinHeight="34" Padding="0,0,12,0" Margin="0,10,0,0" Style="{StaticResource GhostButton}"/>
+                    </StackPanel>
+                </ScrollViewer>
+                <Grid Grid.Row="1" Margin="0,14,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="2*"/></Grid.ColumnDefinitions>
+                    <Button Content="{ui:T Action_Cancel}" Command="{Binding CloseCommand}" MinHeight="44"/>
+                    <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="{ui:T Imp_Apply}" Command="{Binding ApplyCommand}" MinHeight="44"/>
+                </Grid>
+            </Grid>
+        </Border>
+    </DataTemplate>
+</ResourceDictionary>

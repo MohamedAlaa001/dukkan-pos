@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\LocalCashier.Domain\LocalCashier.Domain.csproj" />
+    <ProjectReference Include="..\LocalCashier.Application\LocalCashier.Application.csproj" />
+    <ProjectReference Include="..\LocalCashier.Persistence\LocalCashier.Persistence.csproj" />
+    <ProjectReference Include="..\LocalCashier.Printing\LocalCashier.Printing.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\logo.png" />
+    <Resource Include="Assets\instapay.png" />
+    <Resource Include="Assets\Icons\*.png" />
+    <Resource Include="Assets\UiIcons\*.png" />
+    <Resource Include="Assets\dukkan.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>Dukkan.UI</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyName>Dukkan</AssemblyName>
+    <ApplicationIcon>Assets\dukkan.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+</Project>
