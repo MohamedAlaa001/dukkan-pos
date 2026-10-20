@@ -1,5 +1,7 @@
 # Dukkan POS · دكان
 
+[![Dukkan 1.0.0: Your shop. Your control. Offline Windows POS in English and Arabic, with a dashboard preview.](docs/images/dukkan-banner.png)](https://github.com/MohamedAlaa001/dukkan-pos/releases/latest)
+
 **An offline Windows point of sale for a single retail shop, in English and Arabic.**
 
 Dukkan brings checkout, products, stock, customer accounts, suppliers and everyday reports into one desktop app. It started with a friend's clothing shop and supports general retail, including products with sizes and colors. Your shop's data stays on your PC, and everyday use does not require an internet connection.
