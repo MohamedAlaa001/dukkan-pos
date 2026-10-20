@@ -87,4 +87,10 @@ Money is stored as integer piastres and quantities as milli-units. Corrections p
 
 Please report problems with the version shown on the home screen, the steps to reproduce, and your Windows/printer details where relevant. Remove shop records, customer details and credentials from anything you attach.
 
-Source code and installers are publicly available. An open-source license has not yet been selected.
+Source code and installers are publicly available under the [MIT license](LICENSE).
+You may use, modify and redistribute Dukkan, including commercially, provided you
+keep the copyright and license notice. The software is provided without warranty.
+Third-party components retain their own licenses and notices.
+
+Contributions are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md). For security
+reports, follow [SECURITY.md](SECURITY.md).

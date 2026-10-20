@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: User guide
+    url: https://github.com/MohamedAlaa001/dukkan-pos/blob/main/docs/USER_GUIDE.md
+    about: Installation, workflows, backups and recovery.
+  - name: Security policy
+    url: https://github.com/MohamedAlaa001/dukkan-pos/blob/main/SECURITY.md
+    about: Read this before reporting a security vulnerability.

@@ -1,0 +1,41 @@
+name: Bug report
+description: Report a crash or a workflow that does not work as expected.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: "Please remove customer data, passwords and recovery secrets from all attachments. For vulnerabilities, follow SECURITY.md."
+  - type: input
+    id: version
+    attributes:
+      label: Dukkan version
+      description: Version shown on the home screen.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Windows and hardware
+      description: Windows version and relevant printer/scanner model.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Include the page, buttons clicked and interface language.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include error messages and sanitized screenshots or logs if available.
+    validations:
+      required: true
