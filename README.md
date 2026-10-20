@@ -16,7 +16,7 @@ Dukkan brings checkout, products, stock, customer accounts, suppliers and everyd
 
 The installer is for **64-bit Windows** and includes the .NET runtime. Updates replace the application files while keeping business data separately. Dukkan appears in Windows **Installed apps**, where you can uninstall it.
 
-Release downloads follow the repository's access permissions. While the repository is private, only people with access can download them.
+The repository and release downloads are public. You do not need a GitHub account to download the installer.
 
 ## What you can do
 
@@ -79,4 +79,4 @@ Money is stored as integer piastres and quantities as milli-units. Corrections p
 
 Please report problems with the version shown on the home screen, the steps to reproduce, and your Windows/printer details where relevant. Remove shop records, customer details and credentials from anything you attach.
 
-Public availability and open-source licensing are under consideration. An open-source license has not yet been selected.
+Source code and installers are publicly available. An open-source license has not yet been selected.
